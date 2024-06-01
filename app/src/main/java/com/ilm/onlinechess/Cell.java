@@ -35,7 +35,7 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
     public ArrayList< ArrayList<int[]> > availableEnemyMoves = new ArrayList<>();
 
     private Context context;
-    private Cell whiteKing,blackKing;
+    public Cell whiteKing,blackKing;
 
 
     //posX and posY are invertied because view and inserted from top to bottom, no from left to right
@@ -102,6 +102,7 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
             clonedCell.whiteKing = this.whiteKing;
             clonedCell.blackKing = this.blackKing;
             clonedCell.chessboard = this.chessboard;  // Añadir esta línea para asegurarse de que el tablero también se clona
+
             return clonedCell;
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e); // Manejar la excepción apropiadamente
@@ -204,7 +205,53 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
         }
         return availableMoves;
     }
-    public ArrayList<int[]> setMoves2(boolean ignoreKing) {
+    public ArrayList<int[]> setEnemyMoves(boolean ignoreKing) {
+        Log.d("setMovesPARAM", "setMovesPARAM");
+        availableMoves = new ArrayList<>();
+
+        switch (pieceType) {
+            case PAWN:
+                addPawnMoves2(true);
+                break;
+            case ROOK:
+                addRookMoves(ignoreKing);
+                break;
+            case KNIGHT:
+                addKnightMoves2();
+                break;
+            case BISHOP:
+                addBishopMoves(ignoreKing);
+                break;
+            case QUEEN:
+                addRookMoves(ignoreKing);
+                addBishopMoves(ignoreKing);
+                break;
+            case KING:
+                addKingMoves();
+                break;
+            case PAWN2:
+                addPawnMoves2(false);
+                break;
+            case ROOK2:
+                addRookMoves(ignoreKing);
+                break;
+            case KNIGHT2:
+                addKnightMoves2();
+                break;
+            case BISHOP2:
+                addBishopMoves(ignoreKing);
+                break;
+            case QUEEN2:
+                addRookMoves(ignoreKing);
+                addBishopMoves(ignoreKing);
+                break;
+            case KING2:
+                addKingMoves();
+                break;
+        }
+        return availableMoves;
+    }
+    public ArrayList<int[]> setMoves3(boolean ignoreKing) {
         Log.d("setMovesPARAM", "setMovesPARAM");
         availableMoves = new ArrayList<>();
 
@@ -272,10 +319,13 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
                 } else {
                     if (isOpponentPiece(pieceAtNewPos)) {
                         availableMoves.add(new int[]{newX, newY});
+
                         if( (!ignoreKing && (chessboard[newX][newY].pieceType != KING || chessboard[newX][newY].pieceType != KING2)) )
                             break;
                     } else {
-                            break; // Detenerse al encontrar una pieza del mismo color
+                        availableMoves.add(new int[]{newX, newY});
+
+                        break; // Detenerse al encontrar una pieza del mismo color
                     }
                 }
             }
@@ -305,6 +355,7 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
                                 break;
 
                         } else {
+                            availableMoves.add(new int[]{newX, newY});
                             break; // Detenerse al encontrar una pieza del mismo color
                         }
                     }
@@ -330,6 +381,25 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
             Integer pieceAtNewPos = getPieceAt(newX, newY);
 
             if ( (pieceAtNewPos == EMPTY || isOpponentPiece(pieceAtNewPos)) && isValidPosition(newX,newY) ) {
+                availableMoves.add(new int[]{newX, newY});
+            }
+        }
+    }
+    private void addKnightMoves2() {
+        Log.d("addKnightMoves", "addKnightMoves");
+
+        // Movimiento del caballo
+
+        int[][] moves = {
+                {2, 1}, {2, -1}, {-2, 1}, {-2, -1},
+                {1, 2}, {1, -2}, {-1, 2}, {-1, -2}
+        };
+        for (int[] move : moves) {
+            int newX = posX + move[0];
+            int newY = posY + move[1];
+
+
+            if ( isValidPosition(newX,newY)  ) {
                 availableMoves.add(new int[]{newX, newY});
             }
         }
@@ -367,15 +437,14 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
             int newX = posX + move[0];
             int newY = posY + move[1];
 
-            if (!isValidPosition(newX, newY)) {
-                continue;
-            }
-            Integer pieceAtNewPos = getPieceAt(newX, newY);
-            if (pieceAtNewPos != EMPTY && !isOpponentPiece(pieceAtNewPos)) {
-                continue;
-            }
+           //if (!isValidPosition(newX, newY)) {
+           //   continue;
+           // }
+           // Integer pieceAtNewPos = getPieceAt(newX, newY);
+           //if (pieceAtNewPos != EMPTY && !isOpponentPiece(pieceAtNewPos)) {
+           //     continue;//}
 
-            if (chessboard[newX][newY].checkKingIsSafe(this)) {
+            if (isValidPosition(newX,newY) && chessboard[newX][newY].checkKingIsSafe(this)) {
                 availableMoves.add(new int[]{newX, newY});
             }
 
@@ -424,12 +493,14 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
 
     }
 
+    //set all direction where an enemy can be found
     private ArrayList<int[]> setAllDirections() {
         Log.d("setAllDirections", "setAllDirections");
         checkMateMoves = new ArrayList<>();
 
         // Direcciones en línea y en diagonal para comprobar el jaque
-        int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
+        int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {-1, 1}, {1, -1}, {-1, -1} , {2, 1}, {2, -1}, {-2, 1}, {-2, -1},
+                {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
 
         // Comprobar desde la posición actual de la casilla
         for (int[] direction : directions) {
@@ -437,6 +508,12 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
                 int newX = posX + i * direction[0];
                 int newY = posY + i * direction[1];
 
+                //if its a horse newX and newY are calculated diferently
+                if (direction[0] == 2 || direction[1] == 2) {
+                    newX = posX + direction[0];
+                    newY = posY + direction[1];
+
+                }
 
                 Integer pieceAtNewPos = getPieceAt(newX, newY);
 
@@ -654,11 +731,13 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
         currentCellCopy.blackKing.refreshChessboard(currentCellCopy.chessboard);
         currentCellCopy.whiteKing.refreshChessboard(currentCellCopy.chessboard);
         lastSelectedCellCopy.whiteKing.refreshChessboard(lastSelectedCellCopy.chessboard);
-        lastSelectedCellCopy.whiteKing.refreshChessboard(lastSelectedCellCopy.chessboard);
+        lastSelectedCellCopy.blackKing.refreshChessboard(lastSelectedCellCopy.chessboard);
+
+
 
 
         if( ( GameData.turn == BLACK  && currentCellCopy.blackKing.checkCheckMate() ) || (GameData.turn == WHITE && currentCellCopy.whiteKing.checkCheckMate() ) ){
-            Log.d("REY", "JAQUE");
+            Log.d("REY22", "posX: " +currentCellCopy.blackKing.posX + "posY: " + currentCellCopy.blackKing.posY);
 
             return false;
         }
@@ -667,30 +746,7 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
 
         return true;
     }
-    public boolean checkKingIsSafe2(Cell lastSelectedCell) {
-        Log.d("checkKingIsSafe", "checkKingIsSafe");
 
-        int auxPieceType = pieceType;
-        movePiece(lastSelectedCell);
-
-        if( whiteKing.checkCheckMate() || blackKing.checkCheckMate() ){
-            Log.d("TRIE","TRIE)");
-            return false;
-        }
-
-        lastSelectedCell.pieceType = pieceType;
-        pieceType=auxPieceType;
-
-        setAvailableEnemyMoves();
-
-        showBitmap();
-        lastSelectedCell.showBitmap();
-
-        //Log.d("MAR", currentCellCopy.pieceType + "posY" + currentCellCopy.posY);
-        //Log.d("MAR2", lastSelectedCellCopy.pieceType + "posY" + lastSelectedCellCopy.posY);
-
-        return true;
-    }
 
 
     //CHECK THAN IN A CELL AN ENEMY CAN MOVE AND SET THE POSSIBLE MOVEMENTS OF THE ENEMY
@@ -706,6 +762,7 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
             Log.d("REY", "("+posX + ":" + posY+")");
 
         setAvailableEnemyMoves();
+
         for (ArrayList<int[]> arrays : availableEnemyMoves ) {
             for (int[] enemyMoves : arrays) {
 
@@ -737,8 +794,14 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
 
             //IF THE POSITION EXISTS
             if (isValidPosition(X, Y) ) {
-                availableEnemyMoves.add(chessboard[X][Y].setMoves2(true));
-                Log.d("ESOE",availableEnemyMoves.toString());
+                availableEnemyMoves.add(chessboard[X][Y].setEnemyMoves(true));
+                for (ArrayList<int[]> moves3 : availableEnemyMoves) {
+                    for(int [] moves4 :moves3){
+                        Log.d("ESOE", Arrays.toString(moves4));
+                    }
+                }
+
+
                 Log.d("ESOE", String.valueOf(pieceType));
             }
         }
@@ -749,8 +812,4 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
         return posX >= 0 && posX < 8 && posY >= 0 && posY < 8;
     }
 
-
-
-    //PORFINNN, QUEDA COMPROBAR QUE EL REY PUEDA MOVER DONDE UN PEON SE LO COMA, SE QUE NO DEJA MOVER DONDE SE PUEDAN MOVER OTRAS PIEZAS, PERO LA "SIMULACION" CHECKKINGISAFE DEBERIA DE SIMULAR ESE MOVIMIENTO LATERAL DEL PEON TAMBIEN
-    //TERMINAR EL SET AVAILABLE ENEMY MOVES
 }

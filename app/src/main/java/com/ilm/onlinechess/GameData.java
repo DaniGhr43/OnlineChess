@@ -30,25 +30,33 @@ public class GameData  {
 
     public static int currentPlayer;
 
+    public static int tempGameID= 0 ;
     public static final int WHITE = 0;
-    public static final int BLACK = -1;
+    public static final int BLACK = 1;
     public static final int CREATE = 1;
     public static final int JOIN = 2;
     public static final int STARTED = 3;
     public static final int OFFLINE = -1;
-    public static int turn=0;
     public static boolean isLoged=false;
+    public static int turn;
     public static User user = null;
     private static FirebaseFirestore db = FirebaseFirestore.getInstance();
     public static void saveGameModel(GameModel model){
         _gameModel.postValue(model);
         gameModel=_gameModel;
 
-        if(model.getGAME_STATUS() == OFFLINE){
+        if(model.getGAME_STATUS() != OFFLINE){
             db.collection("games")
                     .document(String.valueOf(model.gameId))
                     .set(model);
         }
+
+
+
+    }
+    public static void saveGameModelOffline(GameModel model){
+        _gameModel.postValue(model);
+        gameModel=_gameModel;
 
 
 
@@ -97,3 +105,4 @@ public class GameData  {
 }
 
 //bloqeuar si intenas crear sesion estand sin conexion
+//evitar que los dos puedan mover las dos piezas

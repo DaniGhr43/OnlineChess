@@ -113,10 +113,14 @@ public class LoginFragment extends Fragment{
                 try{
                     if(!binding.gameID.getText().equals("") && Integer.parseInt(binding.gameID.getText().toString())!=-2){
                         GameModel model = new GameModel();
-                        model.setGAME_STATUS(GameData.JOIN);
+
                         GameData.currentPlayer = GameData.BLACK;
+
+
+                        model.setGAME_STATUS(GameData.JOIN);
                         model.setGameId(Integer.parseInt(binding.gameID.getText().toString()));
-                        GameData.saveGameModel(model);
+
+                        GameData.saveGameModelOffline(model);
 
                         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_content_login_nav);
                         navController.navigate(R.id.nav_game); // Reemplaza slideshowFragment con el ID correcto de tu fragmento en nav_graph.xml

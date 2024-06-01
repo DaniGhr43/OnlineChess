@@ -6,6 +6,7 @@ public class User {
     private String timespend;
     private int level=0;
     private String email;
+    private boolean isHost;
 
     public User(String username, int rank, String timespend, int level,String email) {
         this.username = username;
@@ -20,6 +21,7 @@ public class User {
         this.timespend = "";
         this.level = 1;
         this.email = "";
+        this.isHost = false;
 
     }
 

@@ -70,20 +70,24 @@ public class GameFragment extends Fragment {
             });
         }
 
-        if(GameData.gameModel != null && GameData.gameModel.getValue().getGAME_STATUS()!=GameData.OFFLINE)
-            GameData.fetchGameModel();
+       // GameData.gameModel != null
+        //if(GameData.gameModel != null && GameData.gameModel.getValue().getGAME_STATUS()!=GameData.OFFLINE){
+         //   Log.d("changed","CHANGE");
+        //}
+
 
 
 
 
         board = new Chessboard(binding.grid, getContext(), getViewLifecycleOwner());
 
-
+        GameData.fetchGameModel();
         gameModel=GameData.gameModel.getValue();
         if(gameModel.getGAME_STATUS()==GameData.CREATE)
             createOnlineGame();
         if(gameModel.getGAME_STATUS()==GameData.JOIN)
             joinOnlineGame();
+
 
         gameModel=GameData.gameModel.getValue();
 
@@ -146,8 +150,14 @@ public class GameFragment extends Fragment {
                             GameModel model = documentSnapshot.toObject(GameModel.class);
 
                             if (model != null) {
-                                Log.d("ERROR NO","Se unio");
+
+
                                 model.setGuestPlayer("GUEST");
+                                if(GameData.isLoged) {
+                                    model.setGuestRank(String.valueOf(GameData.user.getRank()));
+                                    model.setGuestPlayer(GameData.user.getUsername());
+
+                                }
 
                                 updateGameData(model);
                                 gameModel = model;
@@ -170,6 +180,11 @@ public class GameFragment extends Fragment {
         model.setHostPlayer("HOST");
         model.setGAME_STATUS(gameModel.getGAME_STATUS());
 
+        if(GameData.isLoged){
+            model.setHostPlayer(GameData.user.getUsername());
+            model.setHostRank(String.valueOf(GameData.user.getRank()));
+
+        }
         updateGameData(model);
 
         gameModel = model;
@@ -183,12 +198,19 @@ public class GameFragment extends Fragment {
        // gameModel
         if(gameModel!=null){
 
+
             if(gameModel.getGAME_STATUS()==GameData.STARTED || gameModel.getGAME_STATUS()==GameData.OFFLINE)
                 binding.cl2.removeView(binding.bntStart);
 
+            if(GameData.user != null){
+                binding.guestRank.setText(String.valueOf(gameModel.getGuestRank()));
+                binding.hostRank.setText(String.valueOf(gameModel.getHostRank()));
+
+            }
+
             binding.gameID.setText(String.valueOf(gameModel.gameId));
-           //gameModel.getHostPlayer());
-           // binding.gameGuest.setText(gameModel.getGuestPlayer());
+            binding.gameGuest.setText(gameModel.getGuestPlayer());
+            binding.gameHost.setText(gameModel.getHostPlayer());
 
 
         }
@@ -203,22 +225,24 @@ public class GameFragment extends Fragment {
     }
 
     public void startGame(){
+        updateUI();
 
-        GameModel model = new GameModel();
-        model.setGameId(GameData.gameModel.getValue().gameId);
-        model.setHostPlayer(GameData.gameModel.getValue().getHostPlayer());
-        model.setGuestPlayer(GameData.gameModel.getValue().getGuestPlayer());
+        gameModel.setGameId(GameData.gameModel.getValue().gameId);
+
         if(GameData.gameModel.getValue().getGAME_STATUS() != GameData.OFFLINE)
-            model.setGAME_STATUS(GameData.STARTED);
-        updateGameData(model);
+            gameModel.setGAME_STATUS(GameData.STARTED);
+
+        updateGameData(gameModel);
 
     }
 
 
     public void updateGameData(GameModel model){
 
+
         GameData.saveGameModel(model);
     }
+
 
 
 

@@ -26,10 +26,16 @@ public class ProfileFragment extends Fragment {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        binding.username.setText(String.valueOf(GameData.user.getUsername()));
-        binding.email.setText(String.valueOf(GameData.user.getEmail()));
-        binding.level.setText(String.valueOf(GameData.user.getLevel()));
-        binding.rank.setText(String.valueOf(GameData.user.getRank()));
+        if(GameData.user==null)
+            binding.username.setText(("Guest"));
+        else{
+
+            binding.username.setText(String.valueOf(GameData.user.getUsername()));
+            binding.email.setText(String.valueOf(GameData.user.getEmail()));
+            binding.level.setText(String.valueOf(GameData.user.getLevel()));
+            binding.rank.setText(String.valueOf(GameData.user.getRank()));
+
+        }
 
         return root;
     }

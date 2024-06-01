@@ -49,18 +49,6 @@
                 app:layout_constraintVertical_bias="0.048" />
 
             <TextView
-                android:id="@+id/gameGuest"
-                android:layout_width="139dp"
-                android:layout_height="21dp"
-                android:text="GuestUser"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.941"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.723" />
-
-            <TextView
                 android:id="@+id/gameID"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -71,6 +59,18 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.048" />
+
+            <TextView
+                android:id="@+id/hostRank"
+                android:layout_width="140dp"
+                android:layout_height="25dp"
+                android:text="TextView"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.183"
+                app:layout_constraintStart_toEndOf="@+id/gameHost"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.707" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.gridlayout.widget.GridLayout
@@ -93,15 +93,37 @@
                 android:id="@+id/bntStart"
                 android:layout_width="127dp"
                 android:layout_height="49dp"
+                android:backgroundTint="@color/colorPrimary"
                 android:text="StartGame"
+                app:cornerRadius="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/gameGuest"
+                android:layout_width="139dp"
+                android:layout_height="21dp"
+                android:text="GuestUser"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/bntStart"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.16"
-                android:backgroundTint="@color/colorPrimary"
-                app:cornerRadius="8dp"
-                />
+                app:layout_constraintVertical_bias="0.125" />
+
+            <TextView
+                android:id="@+id/guestRank"
+                android:layout_width="152dp"
+                android:layout_height="21dp"
+                android:text="TextView"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.133"
+                app:layout_constraintStart_toEndOf="@+id/gameGuest"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.125" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

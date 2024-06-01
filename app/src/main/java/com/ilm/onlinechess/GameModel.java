@@ -14,6 +14,12 @@ public class GameModel {
     private String winner;
     private String hostPlayer;
     private String guestPlayer;
+
+
+
+    //private int turn;
+    private String hostRank;
+    private String guestRank;
     private int currentPlayer;
    private ArrayList<Integer> positions  ;
    private int GAME_STATUS ;
@@ -28,6 +34,9 @@ public class GameModel {
         this.hostPlayer = "";
         this.guestPlayer = "";
         this.GAME_STATUS = 0;
+        this.hostRank = "";
+        this.guestPlayer = "";
+
         positions = new ArrayList<>();
     }
 
@@ -85,7 +94,20 @@ public class GameModel {
         return GAME_STATUS;
     }
 
+    public void setHostRank(String hostRank) {
+        this.hostRank = hostRank;
+    }
+    public void setGuestRank(String guestRank) {
+        this.guestRank = guestRank;
+    }
 
+    public String getHostRank() {
+        return hostRank;
+    }
+
+    public String getGuestRank() {
+        return guestRank;
+    }
 
 }
 

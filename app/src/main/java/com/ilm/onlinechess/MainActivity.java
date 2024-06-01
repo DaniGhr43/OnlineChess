@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-
+                            GameData.isLoged = false;
                             updateUI(mAuth.getCurrentUser());
                         }
                     }
@@ -190,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
                         // Convertir el documento a un objeto GameModel
                         User user = documentSnapshot.toObject(User.class);
 
+                        GameData.isLoged = true;
                         if (user != null) {
                             Log.d("USER LOADED","USER LOADED");
 
@@ -198,10 +199,10 @@ public class MainActivity extends AppCompatActivity {
 
                         } else {
                             // CREANDO USUARIO POR PRIMERA VEZ
-                            User guestUser = new User();
-                            guestUser.setUsername("Guest");
-                            GameData.user=guestUser;
-                            Log.d("ERRORSAVING USER: ","User not found, creatin user");
+                            // User guestUser = new User();
+                            //guestUser.setUsername("Guest");
+                            //GameData.user=guestUser;
+                            //Log.d("ERRORSAVING USER: ","User not found, creatin user");
 
                             User logedUser = new User();
                             logedUser.setEmail(MainActivity.mAuth.getCurrentUser().getEmail());

@@ -1,11 +1,13 @@
 package com.ilm.onlinechess;
 
+import android.app.GameManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.gridlayout.widget.GridLayout;
@@ -64,8 +66,14 @@ public class Chessboard {
                     if (clickedPositions != null && !clickedPositions.isEmpty()){
 
 
-                        click(cells[clickedPositions.get(0)][clickedPositions.get(1)]);
-                        click(cells[clickedPositions.get(2)][clickedPositions.get(3)]);
+                        //Only change turn in the receveiver client
+
+
+                            click(cells[clickedPositions.get(0)][clickedPositions.get(1)]);
+                            click(cells[clickedPositions.get(2)][clickedPositions.get(3)]);
+
+
+
                     }
 
                 }
@@ -126,12 +134,12 @@ public class Chessboard {
                 final int  YY= y;
 
 
-
-
-                    cell.setOnClickListener(new View.OnClickListener() {
+                cell.setOnClickListener(new View.OnClickListener() {
 
                         @Override
                         public void onClick(View v) {
+
+
                             Log.d("dd", String.valueOf(GameData.gameModel.getValue().getGAME_STATUS()));
                             if(GameData.gameModel.getValue().getGAME_STATUS()==GameData.STARTED){
                                 for(Cell[] cel : cells){
@@ -142,15 +150,18 @@ public class Chessboard {
 
                                 Log.d("CLOICK", String.valueOf(cell.pieceType));
 
-
-
                                 cell.refreshChessboard(cells);
-                                click(cell);
+
+                                if(GameData.currentPlayer == GameData.turn){
+                                    click(cell);
+                                }
+
 
                             }
                         }
 
-                    });
+                });
+
 
                 cells[x][y]=cell;
 
@@ -163,7 +174,8 @@ public class Chessboard {
 
 
     private void changeTurn() {
-        GameData.turn = (GameData.turn == WHITE) ? BLACK : WHITE;
+        GameData.turn=((GameData.turn == WHITE) ? BLACK : WHITE);
+
     }
     public void click(Cell cell) {
         boolean isBeingCaptured = false;
@@ -172,7 +184,7 @@ public class Chessboard {
 
         turnCont++;
 
-        Log.d("CLOICK", String.valueOf(GameData.turn));
+        Log.d("CLOICK22", String.valueOf(GameData.currentPlayer));
 
         for (Cell[] cel : cells) {
             for (Cell c : cel) {
@@ -182,9 +194,11 @@ public class Chessboard {
 
 
         //Change the state of selected in the clicked and last clicked cell if it can be changed
+        if(GameData.currentPlayer == GameData.turn){
 
+        }
 
-        if (cell.pieceType < 6 && GameData.turn == WHITE || (cell.pieceType > 5 && GameData.turn == BLACK) || cell.pieceType == cell.EMPTY || cell.isShowingAvailableMove)
+        if ( (cell.pieceType < 6 && GameData.turn == WHITE )|| (cell.pieceType > 5 && GameData.turn == BLACK) || cell.pieceType == cell.EMPTY || cell.isShowingAvailableMove )
             cell.setSeleccionada(!cell.seleccionada);
 
 
@@ -205,7 +219,7 @@ public class Chessboard {
             //if the cell is showing an available move(the bitmap of the cell is the dot) and is clicked, move the piece
             if (cell.isShowingAvailableMove) {
                 //If its its turn
-                if ((GameData.turn == WHITE && lastSelectedCell.pieceType < 6 && lastSelectedCell.pieceType != -1) || (GameData.turn == BLACK && lastSelectedCell.pieceType > 5)) {
+                if ((GameData.turn== WHITE && lastSelectedCell.pieceType < 6 && lastSelectedCell.pieceType != -1) || (GameData.turn == BLACK && lastSelectedCell.pieceType > 5)) {
                     isBeingCaptured = cell.movePiece(lastSelectedCell);
                     ArrayList<Integer> auxPositions = new ArrayList<>();
 
@@ -217,8 +231,11 @@ public class Chessboard {
                     gameModel.setPositions(auxPositions);
                     GameData.saveGameModel(gameModel);
 
+                    if(checkWin(cell) )
+                        GameData.turn=4;
 
-                    canChangeTurn = true;
+                    canChangeTurn=true;
+
                 }
 
             }
@@ -246,15 +263,17 @@ public class Chessboard {
             }
             //if the cell is being unselected, hide all the last shown availables moves
         } else {
+            if (availableMoves!=null){
+                for (  int moves[] : availableMoves) {
+                    int X = moves[0];
+                    int Y = moves[1];
 
-            for (int moves[] : availableMoves) {
-                int X = moves[0];
-                int Y = moves[1];
-
-                if (X >= 0 && Y >= 0 && X < 8 && Y < 8) {
-                    cells[X][Y].hideAvailableMoves();
+                    if (X >= 0 && Y >= 0 && X < 8 && Y < 8) {
+                        cells[X][Y].hideAvailableMoves();
+                    }
                 }
             }
+
         }
 
         //If the game is offline just change turn if available, if the game is online  change the turn when the click is finished in the client who is not moving
@@ -262,8 +281,25 @@ public class Chessboard {
             changeTurn();
 
 
-        //Agregar el caballo a la available enemy moves
+
         lastSelectedCell = cell;
     }
-//AÑADIR A SET AVAILABLES MOVES EL MOVIMIENTO DE CABALLO
+
+    private boolean checkWin(Cell cell){
+        cell.whiteKing.setMoves();
+        Log.d("dasdas",cell.whiteKing.availableMoves.toString());
+        if(cell.whiteKing.availableMoves.size()==0 && cell.whiteKing.checkCheckMate()){
+
+            Toast.makeText(context, "Black wins", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        cell.blackKing.setMoves();
+        if(cell.blackKing.availableMoves.size()==0 && cell.blackKing.checkCheckMate()){
+            Toast.makeText(context, "White wins", Toast.LENGTH_SHORT).show();
+
+            return true;
+        }
+        return false;
+    }
+
 }

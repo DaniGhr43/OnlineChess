@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "180266998589",
+    "project_id": "onlinechess-974a1",
+    "storage_bucket": "onlinechess-974a1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:180266998589:android:1d4360eb288fc54d170354",
+        "android_client_info": {
+          "package_name": "com.ilm.onlinechess"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "180266998589-pjibfehgnk9j4jf6rpqoopa5p1acmjkl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ilm.onlinechess",
+            "certificate_hash": "2467084f79b9a74916843292dfc0a8127d37d4af"
+          }
+        },
+        {
+          "client_id": "180266998589-eg9fuv018j85cme4jbj6dtc1vrrr3i58.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzh2dh0KCWU-kXV3N_l31Y-QSlxShlfc0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "180266998589-eg9fuv018j85cme4jbj6dtc1vrrr3i58.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

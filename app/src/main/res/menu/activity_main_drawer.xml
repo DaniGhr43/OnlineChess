@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:name="com.ilm.onlinechess.ui.home.HomeFragment"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="@string/menu_home" />
+        <item
+            android:id="@+id/nav_game"
+            android:name="com.ilm.onlinechess.ui.game.GameFragment"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Play" />
+        <item
+            android:id="@+id/nav_profile"
+            android:name="com.ilm.onlinechess.ui.profile.ProfileFragment"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Profile" />
+
+
+    </group>
+</menu>

@@ -446,6 +446,8 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
 
             if (isValidPosition(newX,newY) && chessboard[newX][newY].checkKingIsSafe(this)) {
                 availableMoves.add(new int[]{newX, newY});
+                Log.d("guarda", "guarda");
+
             }
 
         }
@@ -695,56 +697,59 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
 
     public boolean checkKingIsSafe(Cell lastSelectedCell) {
         Log.d("checkKingIsSafe", "checkKingIsSafe");
-        // Crear copias de las celdas
-        Cell currentCellCopy = this.clone();
-        Cell[][] clonedChessboard = new Cell[8][8];
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                clonedChessboard[i][j] = chessboard[i][j].clone();
+        if(isOpponentPiece(lastSelectedCell.pieceType) || pieceType==EMPTY){
+            // Crear copias de las celdas
+            Cell currentCellCopy = this.clone();
+            Cell[][] clonedChessboard = new Cell[8][8];
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    clonedChessboard[i][j] = chessboard[i][j].clone();
+                }
             }
+            Cell lastSelectedCellCopy = lastSelectedCell.clone();
+            currentCellCopy.whiteKing = whiteKing.clone();
+            lastSelectedCellCopy.whiteKing = whiteKing.clone();
+            currentCellCopy.blackKing = blackKing.clone();
+            lastSelectedCellCopy.blackKing = blackKing.clone();
+            currentCellCopy.refreshChessboard(clonedChessboard);
+            lastSelectedCellCopy.refreshChessboard(clonedChessboard);
+            //currentCellCopy.movePiece(lastSelectedCellCopy);
+
+
+            Log.d("MAR",  "PiecaType current:" + currentCellCopy.pieceType);
+            Log.d("MAR2", "PiecaType last:" + lastSelectedCellCopy.pieceType);
+            int auxPiecetype = currentCellCopy.pieceType;
+            currentCellCopy.pieceType=lastSelectedCellCopy.pieceType;
+            lastSelectedCellCopy.pieceType = EMPTY;
+
+
+            currentCellCopy.setSeleccionada(false);
+
+            Log.d("MAR", currentCellCopy.posX + " posY " + currentCellCopy.posY);
+            Log.d("MAR2", lastSelectedCellCopy.posX + " posY " + lastSelectedCellCopy.posY);
+
+            //You have to refresh the value in the chessboard of the changed piece, and refresh the chessboard of the kings with that new chessboard
+            currentCellCopy.chessboard[currentCellCopy.posX][currentCellCopy.posY] = currentCellCopy;
+            lastSelectedCellCopy.chessboard[lastSelectedCellCopy.posX][lastSelectedCellCopy.posY] = lastSelectedCellCopy;
+            currentCellCopy.blackKing.refreshChessboard(currentCellCopy.chessboard);
+            currentCellCopy.whiteKing.refreshChessboard(currentCellCopy.chessboard);
+            lastSelectedCellCopy.whiteKing.refreshChessboard(lastSelectedCellCopy.chessboard);
+            lastSelectedCellCopy.blackKing.refreshChessboard(lastSelectedCellCopy.chessboard);
+
+
+
+
+            if( ( GameData.turn == BLACK  && currentCellCopy.blackKing.checkCheckMate() ) || (GameData.turn == WHITE && currentCellCopy.whiteKing.checkCheckMate() ) && currentCellCopy.isOpponentPiece(auxPiecetype)  ){
+                Log.d("REY22", "posX: " +currentCellCopy.blackKing.posX + "posY: " + currentCellCopy.blackKing.posY);
+
+                return false;
+            }
+            lastSelectedCellCopy.pieceType= currentCellCopy.pieceType;
+            currentCellCopy.pieceType=auxPiecetype;
+
+            return true;
         }
-        Cell lastSelectedCellCopy = lastSelectedCell.clone();
-        currentCellCopy.whiteKing = whiteKing.clone();
-        lastSelectedCellCopy.whiteKing = whiteKing.clone();
-        currentCellCopy.blackKing = blackKing.clone();
-        lastSelectedCellCopy.blackKing = blackKing.clone();
-        currentCellCopy.refreshChessboard(clonedChessboard);
-        lastSelectedCellCopy.refreshChessboard(clonedChessboard);
-        //currentCellCopy.movePiece(lastSelectedCellCopy);
-
-
-        Log.d("MAR",  "PiecaType current:" + currentCellCopy.pieceType);
-        Log.d("MAR2", "PiecaType last:" + lastSelectedCellCopy.pieceType);
-        int auxPiecetype = currentCellCopy.pieceType;
-        currentCellCopy.pieceType=lastSelectedCellCopy.pieceType;
-        lastSelectedCellCopy.pieceType = EMPTY;
-
-
-        currentCellCopy.setSeleccionada(false);
-
-        Log.d("MAR", currentCellCopy.posX + " posY " + currentCellCopy.posY);
-        Log.d("MAR2", lastSelectedCellCopy.posX + " posY " + lastSelectedCellCopy.posY);
-
-        //You have to refresh the value in the chessboard of the changed piece, and refresh the chessboard of the kings with that new chessboard
-        currentCellCopy.chessboard[currentCellCopy.posX][currentCellCopy.posY] = currentCellCopy;
-        lastSelectedCellCopy.chessboard[lastSelectedCellCopy.posX][lastSelectedCellCopy.posY] = lastSelectedCellCopy;
-        currentCellCopy.blackKing.refreshChessboard(currentCellCopy.chessboard);
-        currentCellCopy.whiteKing.refreshChessboard(currentCellCopy.chessboard);
-        lastSelectedCellCopy.whiteKing.refreshChessboard(lastSelectedCellCopy.chessboard);
-        lastSelectedCellCopy.blackKing.refreshChessboard(lastSelectedCellCopy.chessboard);
-
-
-
-
-        if( ( GameData.turn == BLACK  && currentCellCopy.blackKing.checkCheckMate() ) || (GameData.turn == WHITE && currentCellCopy.whiteKing.checkCheckMate() ) ){
-            Log.d("REY22", "posX: " +currentCellCopy.blackKing.posX + "posY: " + currentCellCopy.blackKing.posY);
-
-            return false;
-        }
-        lastSelectedCellCopy.pieceType= currentCellCopy.pieceType;
-        currentCellCopy.pieceType=auxPiecetype;
-
-        return true;
+        return false;
     }
 
 
@@ -810,6 +815,36 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
 
     public boolean isValidPosition(int posX, int posY) {
         return posX >= 0 && posX < 8 && posY >= 0 && posY < 8;
+    }
+    public boolean isLegitMove( Cell king){
+
+        int cont = 0;
+        if(checkKingIsSafe(king)){
+            if((pieceType==EMPTY || pieceType > 5 ) && king.pieceType < 6){
+                cont++;
+
+            }
+            //WHITES. setImageBitmap will set a just dot
+            if((pieceType==EMPTY || pieceType < 6 ) && king.pieceType > 5 ){
+                cont++;
+            }
+            //WHITES. setImageBitmap will set a dot combined with the piece
+            if (pieceType > 5 && king.pieceType < 6 && pieceType!=EMPTY) {
+                cont++;
+
+            }
+            //BLACKS. setImageBitmap will set a dot combined with the piece
+            if ( pieceType < 6 && king.pieceType > 5 && pieceType!=EMPTY) {
+                cont++;
+            }
+
+
+        }
+        if(cont == 0){
+            return true;
+        }else
+            return false;
+
     }
 
 }

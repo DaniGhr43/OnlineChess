@@ -28,7 +28,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -210,9 +213,9 @@ public class Chessboard {
         if (cell.seleccionada) {
 
             //if the cell is a king
-            if ((cell.pieceType == cell.KING || cell.pieceType == cell.KING2))
+            if ((cell.pieceType == cell.KING || cell.pieceType == cell.KING2)){
                 availableMoves = cell.setMoves();
-            else
+            }else
                 availableMoves = cell.setMoves(false);
 
 
@@ -242,6 +245,8 @@ public class Chessboard {
             //Hide the last availables moves
             for (int last[] : lastSelections) {
                 cells[last[0]][last[1]].hideAvailableMoves();
+
+
             }
 
             //show the availables moves of the cell. this is only executed if this cell is not being captured
@@ -272,6 +277,7 @@ public class Chessboard {
                         cells[X][Y].hideAvailableMoves();
                     }
                 }
+                cell.availableMoves=new ArrayList<>();
             }
 
         }
@@ -286,20 +292,38 @@ public class Chessboard {
     }
 
     private boolean checkWin(Cell cell){
-        cell.whiteKing.setMoves();
-        Log.d("dasdas",cell.whiteKing.availableMoves.toString());
-        if(cell.whiteKing.availableMoves.size()==0 && cell.whiteKing.checkCheckMate()){
+        changeTurn();
+        availableMoves=cell.whiteKing.setMoves();
+        int contMoves = 0;
+        for(int[] moves: availableMoves){
+            if(cells[moves[0]][moves[1]].isLegitMove(cell.whiteKing))
+                contMoves++;
+        }
+
+        if(contMoves==0 && cell.whiteKing.checkCheckMate()){
 
             Toast.makeText(context, "Black wins", Toast.LENGTH_SHORT).show();
+            changeTurn();
             return true;
         }
-        cell.blackKing.setMoves();
-        if(cell.blackKing.availableMoves.size()==0 && cell.blackKing.checkCheckMate()){
-            Toast.makeText(context, "White wins", Toast.LENGTH_SHORT).show();
+        contMoves=0;
+        availableMoves=cell.blackKing.setMoves();
 
+
+
+        for(int[] moves: availableMoves){
+            if(cells[moves[0]][moves[1]].isLegitMove(cell.blackKing));
+                contMoves++;
+        }
+        Log.d("SSS",contMoves+"");
+        if(contMoves==0 && cell.blackKing.checkCheckMate()){
+            Toast.makeText(context, "White wins", Toast.LENGTH_SHORT).show();
+            changeTurn();
             return true;
         }
+        changeTurn();
         return false;
     }
+
 
 }

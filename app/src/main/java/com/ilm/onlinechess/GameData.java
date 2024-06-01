@@ -83,6 +83,17 @@ public class GameData  {
                             });
     }
 
+
+    public static void updateUser(User user){
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        GameData.user=user;
+
+        db.collection("users")
+                .document(String.valueOf(user.getEmail()))
+                .set(user);
+    }
 }
 
 //bloqeuar si intenas crear sesion estand sin conexion

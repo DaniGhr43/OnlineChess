@@ -191,16 +191,32 @@ public class MainActivity extends AppCompatActivity {
                         User user = documentSnapshot.toObject(User.class);
 
                         if (user != null) {
-                            Log.d("ERROR NO","Se unio");
+                            Log.d("USER LOADED","USER LOADED");
+
+
                             GameData.user=user;
 
                         } else {
-                            // Guardar el modelo de juego (parece que debería ser en caso de que sea no nulo, revisa esto)
-                            Log.e("ERROR SAVING USER: ","User not found");
+                            // CREANDO USUARIO POR PRIMERA VEZ
+                            User guestUser = new User();
+                            guestUser.setUsername("Guest");
+                            GameData.user=guestUser;
+                            Log.d("ERRORSAVING USER: ","User not found, creatin user");
+
+                            User logedUser = new User();
+                            logedUser.setEmail(MainActivity.mAuth.getCurrentUser().getEmail());
+                            logedUser.setUsername(MainActivity.mAuth.getCurrentUser().getDisplayName());
+
+                            GameData.updateUser(logedUser);
                         }
                     }
                 });
 
 
     }
+
+
+
 }
+
+//BOTON DE REGISTER

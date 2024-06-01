@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ilm.onlinechess.GameData;
 import com.ilm.onlinechess.databinding.FragmentLoginBinding;
 import com.ilm.onlinechess.databinding.FragmentProfileBinding;
 
@@ -24,6 +25,11 @@ public class ProfileFragment extends Fragment {
 
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        binding.username.setText(String.valueOf(GameData.user.getUsername()));
+        binding.email.setText(String.valueOf(GameData.user.getEmail()));
+        binding.level.setText(String.valueOf(GameData.user.getLevel()));
+        binding.rank.setText(String.valueOf(GameData.user.getRank()));
 
         return root;
     }

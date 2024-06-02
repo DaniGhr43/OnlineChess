@@ -1,6 +1,5 @@
 package com.ilm.onlinechess;
 
-import android.app.GameManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,31 +8,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.gridlayout.widget.GridLayout;
-import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewTreeLifecycleOwner;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.SetOptions;
-
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Chessboard {
 
@@ -60,27 +41,28 @@ public class Chessboard {
         this.grid=grid;
         this.context = context;
         gameModel = GameData.gameModel.getValue();
-            GameData.gameModel.observe(lifecycleOwner, new Observer<GameModel>() {
-                @Override
-                public void onChanged(GameModel newGameModel) {
-                    Log.d("changed","CHANGE");
-                    gameModel = newGameModel;
-                    ArrayList<Integer> clickedPositions = gameModel.getPositions();
-                    if (clickedPositions != null && !clickedPositions.isEmpty()){
+
+        GameData.gameModel.observe(lifecycleOwner, new Observer<GameModel>() {
+            @Override
+            public void onChanged(GameModel newGameModel) {
+                Log.d("changed","CHANGE");
+                gameModel = newGameModel;
+                ArrayList<Integer> clickedPositions = gameModel.getPositions();
+                if (clickedPositions != null && !clickedPositions.isEmpty()){
 
 
-                        //Only change turn in the receveiver client
+                    //Only change turn in the receveiver client
 
 
-                            click(cells[clickedPositions.get(0)][clickedPositions.get(1)]);
-                            click(cells[clickedPositions.get(2)][clickedPositions.get(3)]);
+                    click(cells[clickedPositions.get(0)][clickedPositions.get(1)]);
+                    click(cells[clickedPositions.get(2)][clickedPositions.get(3)]);
 
 
-
-                    }
 
                 }
-            });
+
+            }
+        });
 
     }
 
@@ -141,21 +123,21 @@ public class Chessboard {
 
                         @Override
                         public void onClick(View v) {
+                            Log.d("CLOICK", String.valueOf(gameModel.getGAME_STATUS()));
 
 
                             Log.d("dd", String.valueOf(GameData.gameModel.getValue().getGAME_STATUS()));
-                            if(GameData.gameModel.getValue().getGAME_STATUS()==GameData.STARTED){
+                            if(GameData.gameModel.getValue().getGAME_STATUS()==GameData.STARTED || gameModel.getGAME_STATUS() == GameData.OFFLINE){
                                 for(Cell[] cel : cells){
                                     for(Cell c : cel){
                                         c.refreshChessboard(cells);
                                     }
                                 }
 
-                                Log.d("CLOICK", String.valueOf(cell.pieceType));
 
                                 cell.refreshChessboard(cells);
 
-                                if(GameData.currentPlayer == GameData.turn){
+                                if(GameData.currentPlayer == GameData.turn || gameModel.getGAME_STATUS() == GameData.OFFLINE){
                                     click(cell);
                                 }
 
@@ -180,6 +162,8 @@ public class Chessboard {
         GameData.turn=((GameData.turn == WHITE) ? BLACK : WHITE);
 
     }
+
+    private    boolean mate = true;
     public void click(Cell cell) {
         boolean isBeingCaptured = false;
         boolean canChangeTurn = false;
@@ -234,8 +218,27 @@ public class Chessboard {
                     gameModel.setPositions(auxPositions);
                     GameData.saveGameModel(gameModel);
 
-                    if(checkWin(cell) )
-                        GameData.turn=4;
+                    //first check if the king is checked,then check if its mate
+
+                    if(cell.whiteKing.checkCheckMate() || cell.blackKing.checkCheckMate()){
+                            if(checkWin()){
+                                if(GameData.turn == GameData.BLACK){
+                                    Toast.makeText(context, "Black wins", Toast.LENGTH_SHORT).show();
+                                    //Refresh the state of the gamemodel to end the game
+                                    gameModel.setGAME_STATUS(GameData.FINISHED);
+                                    gameModel.setWinner(GameData.BLACK);
+                                    GameData.saveGameModel(gameModel);
+                                }
+                                else if(GameData.turn == GameData.WHITE){
+                                    Toast.makeText(context, "White wins", Toast.LENGTH_SHORT).show();
+
+                                    gameModel.setGAME_STATUS(GameData.FINISHED);
+                                    gameModel.setWinner(GameData.WHITE);
+                                    GameData.saveGameModel(gameModel);
+                                }
+                            }
+                    }
+
 
                     canChangeTurn=true;
 
@@ -252,7 +255,7 @@ public class Chessboard {
             //show the availables moves of the cell. this is only executed if this cell is not being captured
             if (!isBeingCaptured) {
                 lastSelections.clear();
-                //if the cell is a checked king
+
 
                 for (int moves[] : availableMoves) {
                     int X = moves[0];
@@ -291,39 +294,39 @@ public class Chessboard {
         lastSelectedCell = cell;
     }
 
-    private boolean checkWin(Cell cell){
-        changeTurn();
-        availableMoves=cell.whiteKing.setMoves();
-        int contMoves = 0;
-        for(int[] moves: availableMoves){
-            if(cells[moves[0]][moves[1]].isLegitMove(cell.whiteKing))
-                contMoves++;
-        }
+   private boolean checkWin(){
+        //Change turn becuase chenkKingIsSafe need the cell to be the same type as turn
+       changeTurn();
 
-        if(contMoves==0 && cell.whiteKing.checkCheckMate()){
+       for (Cell[] cel : cells) {
+           for (Cell c : cel) {
+               if( (( GameData.turn == GameData.BLACK && c.pieceType > 5) || ( GameData.turn == GameData.WHITE && c.pieceType < 6  && c.pieceType!=c.EMPTY))) {
 
-            Toast.makeText(context, "Black wins", Toast.LENGTH_SHORT).show();
-            changeTurn();
-            return true;
-        }
-        contMoves=0;
-        availableMoves=cell.blackKing.setMoves();
+                   if ((c.pieceType == c.KING || c.pieceType == c.KING2)) {
+                       availableMoves = c.setMoves();
+                   } else
+                       availableMoves = c.setMoves(false);
 
+                   //if any cell can move , it is not mate
+                   for (int[] moves : availableMoves) {
+                       if (cells[moves[0]][moves[1]].checkKingIsSafe(c)){
+                           Log.d("PIECETYPE", String.valueOf(c.pieceType));
+                           Log.d("PIECETYPE", "X: "+ moves[0] + ", Y: " + moves[1]);
+                           changeTurn();
+                           return false;
+                       }
 
+                   }
 
-        for(int[] moves: availableMoves){
-            if(cells[moves[0]][moves[1]].isLegitMove(cell.blackKing));
-                contMoves++;
-        }
-        Log.d("SSS",contMoves+"");
-        if(contMoves==0 && cell.blackKing.checkCheckMate()){
-            Toast.makeText(context, "White wins", Toast.LENGTH_SHORT).show();
-            changeTurn();
-            return true;
-        }
-        changeTurn();
-        return false;
+               }
+           }
+       }
+
+       changeTurn();
+
+        return true;
     }
+
 
 
 }

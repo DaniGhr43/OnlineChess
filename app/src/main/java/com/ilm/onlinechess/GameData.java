@@ -36,6 +36,7 @@ public class GameData  {
     public static final int CREATE = 1;
     public static final int JOIN = 2;
     public static final int STARTED = 3;
+    public static final int FINISHED = 4;
     public static final int OFFLINE = -1;
     public static boolean isLoged=false;
     public static int turn;
@@ -106,3 +107,4 @@ public class GameData  {
 
 //bloqeuar si intenas crear sesion estand sin conexion
 //evitar que los dos puedan mover las dos piezas
+//comprobar todas las celdas del mismo color a ver si alguna tienen movimientos disponibles

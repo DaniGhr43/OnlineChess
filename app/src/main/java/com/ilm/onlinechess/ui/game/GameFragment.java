@@ -49,45 +49,40 @@ public class GameFragment extends Fragment {
     int cont = 0 ;
 
 
-
+    Dialog dialog;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentGameBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        gameModel=GameData.gameModel.getValue();
+
         updateUI();
         // Inflate the layout for this fragment
-        if( GameData.gameModel.getValue() != null && GameData.gameModel.getValue().getGAME_STATUS()!=GameData.OFFLINE){
-            GameData.gameModel.observe(getViewLifecycleOwner(), new Observer<GameModel>() {
-                @Override
-                public void onChanged(GameModel newGameModel) {
-                    Log.d("changed","CHANGE");
-                    gameModel = newGameModel;
-                    updateUI();
 
-                }
-            });
+        GameData.gameModel.observe(getViewLifecycleOwner(), new Observer<GameModel>() {
+            @Override
+            public void onChanged(GameModel newGameModel) {
+                Log.d("changed","CHANGE");
+                gameModel = newGameModel;
+                updateUI();
+
+            }
+        });
+
+
+
+        if(GameData.gameModel != null && gameModel.getGAME_STATUS()!=GameData.OFFLINE){
+            GameData.fetchGameModel();
         }
-
-       // GameData.gameModel != null
-        //if(GameData.gameModel != null && GameData.gameModel.getValue().getGAME_STATUS()!=GameData.OFFLINE){
-         //   Log.d("changed","CHANGE");
-        //}
-
-
-
-
 
         board = new Chessboard(binding.grid, getContext(), getViewLifecycleOwner());
 
-        GameData.fetchGameModel();
-        gameModel=GameData.gameModel.getValue();
         if(gameModel.getGAME_STATUS()==GameData.CREATE)
             createOnlineGame();
         if(gameModel.getGAME_STATUS()==GameData.JOIN)
             joinOnlineGame();
-
 
         gameModel=GameData.gameModel.getValue();
 
@@ -114,11 +109,6 @@ public class GameFragment extends Fragment {
 
         //Start game
         board.createCells();
-
-
-
-
-
 
         binding.bntStart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -229,7 +219,7 @@ public class GameFragment extends Fragment {
 
         gameModel.setGameId(GameData.gameModel.getValue().gameId);
 
-        if(GameData.gameModel.getValue().getGAME_STATUS() != GameData.OFFLINE)
+        if(gameModel.getGAME_STATUS() != GameData.OFFLINE)
             gameModel.setGAME_STATUS(GameData.STARTED);
 
         updateGameData(gameModel);

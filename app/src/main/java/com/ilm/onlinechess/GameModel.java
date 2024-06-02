@@ -11,7 +11,7 @@ import java.util.Random;
 
 public class GameModel {
     public  int gameId;
-    private String winner;
+    private int winner;
     private String hostPlayer;
     private String guestPlayer;
 
@@ -30,7 +30,7 @@ public class GameModel {
     public GameModel(){
         this.currentPlayer=0;
         this.gameId = -1;
-        this.winner = "";
+        this.winner = -1;
         this.hostPlayer = "";
         this.guestPlayer = "";
         this.GAME_STATUS = 0;
@@ -63,11 +63,11 @@ public class GameModel {
         this.gameId = gameId;
     }
 
-    public String getWinner() {
+    public int getWinner() {
         return winner;
     }
 
-    public void setWinner(String winner) {
+    public void setWinner(int winner) {
         this.winner = winner;
     }
 

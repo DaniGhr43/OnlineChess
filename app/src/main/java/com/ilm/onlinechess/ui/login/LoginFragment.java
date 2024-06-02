@@ -71,14 +71,6 @@ public class LoginFragment extends Fragment{
 
 
 
-
-
-
-
-
-
-
-
         binding.btnOffline.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -444,7 +444,7 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
            //if (pieceAtNewPos != EMPTY && !isOpponentPiece(pieceAtNewPos)) {
            //     continue;//}
 
-            if (isValidPosition(newX,newY) && chessboard[newX][newY].checkKingIsSafe(this)) {
+            if (isValidPosition(newX,newY)) {
                 availableMoves.add(new int[]{newX, newY});
                 Log.d("guarda", "guarda");
 
@@ -461,21 +461,21 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
 
 
         // Movimiento hacia adelante
-        if (getPieceAt(posX, posY + direction) == EMPTY && chessboard[posX][posY+direction].checkKingIsSafe(this)) {
+        if (getPieceAt(posX, posY + direction) == EMPTY ) {
             availableMoves.add(new int[]{posX, posY + direction});
             // Movimiento doble si está en la fila inicial
 
         }
         if (posY == startRow && getPieceAt(posX, posY + 2 * direction) == EMPTY) {
-            if(isValidPosition(posX, posY + 2 * direction) && chessboard[posX][ posY + 2 * direction].checkKingIsSafe(this))
+            if(isValidPosition(posX, posY + 2 * direction))
                 availableMoves.add(new int[]{posX, posY + 2 * direction});
         }
         if (isOpponentPiece(getPieceAt(posX + 1, posY + direction))) {
-            if(isValidPosition(posX + 1, posY + direction) && chessboard[posX + 1][posY + direction].checkKingIsSafe(this))
+            if(isValidPosition(posX + 1, posY + direction))
                 availableMoves.add(new int[]{posX + 1, posY + direction});
         }
         if (isOpponentPiece(getPieceAt(posX - 1, posY + direction))) {
-            if(isValidPosition(posX - 1, posY + direction) && chessboard[posX - 1][ posY + direction].checkKingIsSafe(this))
+            if(isValidPosition(posX - 1, posY + direction) )
                 availableMoves.add(new int[]{posX - 1, posY + direction});
         }
     }
@@ -695,25 +695,28 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
     }
 // En la clase Cell
 
+
+
     public boolean checkKingIsSafe(Cell lastSelectedCell) {
         Log.d("checkKingIsSafe", "checkKingIsSafe");
         if(isOpponentPiece(lastSelectedCell.pieceType) || pieceType==EMPTY){
             // Crear copias de las celdas
             Cell currentCellCopy = this.clone();
+
+            Cell lastSelectedCellCopy = lastSelectedCell.clone();
             Cell[][] clonedChessboard = new Cell[8][8];
             for (int i = 0; i < 8; i++) {
                 for (int j = 0; j < 8; j++) {
                     clonedChessboard[i][j] = chessboard[i][j].clone();
                 }
             }
-            Cell lastSelectedCellCopy = lastSelectedCell.clone();
             currentCellCopy.whiteKing = whiteKing.clone();
             lastSelectedCellCopy.whiteKing = whiteKing.clone();
             currentCellCopy.blackKing = blackKing.clone();
             lastSelectedCellCopy.blackKing = blackKing.clone();
             currentCellCopy.refreshChessboard(clonedChessboard);
             lastSelectedCellCopy.refreshChessboard(clonedChessboard);
-            //currentCellCopy.movePiece(lastSelectedCellCopy);
+          //  //currentCellCopy.movePiece(lastSelectedCellCopy);
 
 
             Log.d("MAR",  "PiecaType current:" + currentCellCopy.pieceType);
@@ -739,11 +742,18 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
 
 
 
-            if( ( GameData.turn == BLACK  && currentCellCopy.blackKing.checkCheckMate() ) || (GameData.turn == WHITE && currentCellCopy.whiteKing.checkCheckMate() ) && currentCellCopy.isOpponentPiece(auxPiecetype)  ){
-                Log.d("REY22", "posX: " +currentCellCopy.blackKing.posX + "posY: " + currentCellCopy.blackKing.posY);
-
-                return false;
+            if(GameData.turn == BLACK) {
+                if (currentCellCopy.blackKing.checkCheckMate()) {
+                    return false;
+                }
+            }else if(GameData.turn == WHITE) {
+                if (currentCellCopy.whiteKing.checkCheckMate()) {
+                    return false;
+                }
             }
+
+            /*&& currentCellCopy.isOpponentPiece(auxPiecetype) */
+            //Log.d("REY22", "posX: " +currentCellCopy.blackKing.posX + "posY: " + currentCellCopy.blackKing.posY);
             lastSelectedCellCopy.pieceType= currentCellCopy.pieceType;
             currentCellCopy.pieceType=auxPiecetype;
 

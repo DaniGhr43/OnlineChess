@@ -29,7 +29,7 @@ public class GameData  {
     public static LiveData<GameModel> gameModel = _gameModel;
 
     public static int currentPlayer;
-
+    public static MutableLiveData<User> _user = new MutableLiveData<>();
     public static int tempGameID= 0 ;
     public static final int WHITE = 0;
     public static final int BLACK = 1;
@@ -40,7 +40,7 @@ public class GameData  {
     public static final int OFFLINE = -1;
     public static boolean isLoged=false;
     public static int turn;
-    public static User user = null;
+
     private static FirebaseFirestore db = FirebaseFirestore.getInstance();
     public static void saveGameModel(GameModel model){
         _gameModel.postValue(model);
@@ -97,7 +97,7 @@ public class GameData  {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        GameData.user=user;
+        _user.postValue(user);
 
         db.collection("users")
                 .document(String.valueOf(user.getEmail()))

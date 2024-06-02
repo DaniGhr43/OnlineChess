@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("USER LOADED","USER LOADED");
 
 
-                            GameData.user=user;
+                            GameData.updateUser(user);
 
                         } else {
                             // CREANDO USUARIO POR PRIMERA VEZ

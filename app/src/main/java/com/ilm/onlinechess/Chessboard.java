@@ -1,5 +1,6 @@
 package com.ilm.onlinechess;
 
+import android.app.GameManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -227,6 +228,7 @@ public class Chessboard {
                                     //Refresh the state of the gamemodel to end the game
                                     gameModel.setGAME_STATUS(GameData.FINISHED);
                                     gameModel.setWinner(GameData.BLACK);
+                                    updateStats(GameData.BLACK);
                                     GameData.saveGameModel(gameModel);
                                 }
                                 else if(GameData.turn == GameData.WHITE){
@@ -234,6 +236,7 @@ public class Chessboard {
 
                                     gameModel.setGAME_STATUS(GameData.FINISHED);
                                     gameModel.setWinner(GameData.WHITE);
+                                    updateStats(GameData.WHITE);
                                     GameData.saveGameModel(gameModel);
                                 }
                             }
@@ -329,4 +332,21 @@ public class Chessboard {
 
 
 
+    public void updateStats(int winner){
+
+        if(GameData.currentPlayer == winner){
+            User user =  GameData._user.getValue();
+            user.setRank(user.getRank()+20);
+            user.setLevel(user.getLevel()+0.25);
+
+            GameData.updateUser(user);
+        }else{
+            User user =  GameData._user.getValue();
+            if(user.getRank()>0)
+                user.setRank(user.getRank()-20);
+            user.setLevel(user.getLevel()+0.10);
+
+            GameData.updateUser(user);
+        }
+    }
 }

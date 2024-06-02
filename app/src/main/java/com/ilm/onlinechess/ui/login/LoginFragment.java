@@ -103,7 +103,7 @@ public class LoginFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 try{
-                    if(!binding.gameID.getText().equals("") && Integer.parseInt(binding.gameID.getText().toString())!=-2){
+                    if(!binding.gameID.getText().equals("") && binding.gameID.getText().length()==4 && Integer.parseInt(binding.gameID.getText().toString())!=-2){
                         GameModel model = new GameModel();
 
                         GameData.currentPlayer = GameData.BLACK;
@@ -116,11 +116,11 @@ public class LoginFragment extends Fragment{
 
                         NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_content_login_nav);
                         navController.navigate(R.id.nav_game); // Reemplaza slideshowFragment con el ID correcto de tu fragmento en nav_graph.xml
-                    }else if (binding.gameID.getText().equals("")){
-                        binding.gameID.setError("Introduce a game id");
+                    }else if (binding.gameID.getText().equals("") || binding.gameID.getText().length()!=4 ){
+                        binding.gameID.setError("Insert a valid game id");
                     }
                 }catch(NumberFormatException e){
-                    binding.gameID.setError("Introduce a valid game id");
+                    binding.gameID.setError("Insert a valid game id");
 
                 }
 

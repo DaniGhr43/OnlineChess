@@ -1,9 +1,15 @@
 package com.ilm.onlinechess.ui.game;
 
+import android.app.Dialog;
+import android.content.Intent;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.gridlayout.widget.GridLayout;
@@ -18,6 +24,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -27,6 +34,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.ilm.onlinechess.Chessboard;
 import com.ilm.onlinechess.GameData;
 import com.ilm.onlinechess.GameModel;
+import com.ilm.onlinechess.LoginNav;
+import com.ilm.onlinechess.MainActivity;
 import com.ilm.onlinechess.R;
 import com.ilm.onlinechess.databinding.FragmentGameBinding;
 import com.ilm.onlinechess.databinding.FragmentLoginBinding;
@@ -49,6 +58,7 @@ public class GameFragment extends Fragment {
     int cont = 0 ;
 
 
+    private Button btnExit, btnReturn;
     Dialog dialog;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -72,6 +82,29 @@ public class GameFragment extends Fragment {
         });
 
 
+        dialog = new Dialog (getContext());
+
+        dialog.setContentView(R.layout.custom_layout);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawable(getResources().getDrawable(R.drawable.custom_dialog_bg));
+        dialog.setCancelable(false);
+
+        btnExit = dialog.findViewById(R.id.btnExit);
+        btnReturn = dialog.findViewById(R.id.btnReturn);
+        btnExit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.exit(0);
+            }
+        });
+
+        btnReturn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getActivity(), LoginNav.class);
+                startActivity(i);
+            }
+        });
 
         if(GameData.gameModel != null && gameModel.getGAME_STATUS()!=GameData.OFFLINE){
             GameData.fetchGameModel();
@@ -144,8 +177,8 @@ public class GameFragment extends Fragment {
 
                                 model.setGuestPlayer("GUEST");
                                 if(GameData.isLoged) {
-                                    model.setGuestRank(String.valueOf(GameData.user.getRank()));
-                                    model.setGuestPlayer(GameData.user.getUsername());
+                                    model.setGuestRank(String.valueOf(GameData._user.getValue().getRank()));
+                                    model.setGuestPlayer(GameData._user.getValue().getUsername());
 
                                 }
 
@@ -171,8 +204,8 @@ public class GameFragment extends Fragment {
         model.setGAME_STATUS(gameModel.getGAME_STATUS());
 
         if(GameData.isLoged){
-            model.setHostPlayer(GameData.user.getUsername());
-            model.setHostRank(String.valueOf(GameData.user.getRank()));
+            model.setHostPlayer(GameData._user.getValue().getUsername());
+            model.setHostRank(String.valueOf(GameData._user.getValue().getRank()));
 
         }
         updateGameData(model);
@@ -192,7 +225,7 @@ public class GameFragment extends Fragment {
             if(gameModel.getGAME_STATUS()==GameData.STARTED || gameModel.getGAME_STATUS()==GameData.OFFLINE)
                 binding.cl2.removeView(binding.bntStart);
 
-            if(GameData.user != null){
+            if(GameData._user.getValue() != null){
                 binding.guestRank.setText(String.valueOf(gameModel.getGuestRank()));
                 binding.hostRank.setText(String.valueOf(gameModel.getHostRank()));
 
@@ -202,6 +235,9 @@ public class GameFragment extends Fragment {
             binding.gameGuest.setText(gameModel.getGuestPlayer());
             binding.gameHost.setText(gameModel.getHostPlayer());
 
+            if(gameModel.getGAME_STATUS()==GameData.FINISHED){
+                dialog.show();
+            }
 
         }
 
@@ -235,6 +271,7 @@ public class GameFragment extends Fragment {
 
 
 
+    //ANADIR QUE AL UNIRSE A ONLINE SIN CONEXION DE ERROR
 
 
 }

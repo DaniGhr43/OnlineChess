@@ -4,10 +4,11 @@ public class User {
     private String username;
     private int rank=100;
     private String timespend;
-    private int level=0;
+    private double level=0;
     private String email;
     private boolean isHost;
 
+    private int type;
     public User(String username, int rank, String timespend, int level,String email) {
         this.username = username;
         this.rank = rank;
@@ -22,7 +23,7 @@ public class User {
         this.level = 1;
         this.email = "";
         this.isHost = false;
-
+        this.type = -1;
     }
 
     public void setUsername(String username) {
@@ -39,7 +40,7 @@ public class User {
     public String getUsername() {
         return username;
     }
-    public void setLevel(int level){
+    public void setLevel(double level){
         this.level=level;
     }
     public int getRank() {
@@ -50,7 +51,7 @@ public class User {
         return timespend;
     }
 
-    public int getLevel(){
+    public double getLevel(){
         return level;
     }
     public String getEmail() {

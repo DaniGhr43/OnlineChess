@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -236,6 +237,12 @@ public class GameFragment extends Fragment {
             binding.gameHost.setText(gameModel.getHostPlayer());
 
             if(gameModel.getGAME_STATUS()==GameData.FINISHED){
+                TextView winner = dialog.findViewById(R.id.winner);
+                if(gameModel.getWinner() == GameData.WHITE)
+                    winner.setText("White");
+                else if(gameModel.getWinner() == GameData.WHITE)
+                    winner.setText("Black");
+
                 dialog.show();
             }
 

@@ -7,70 +7,87 @@
     tools:context=".ui.login.LoginFragment">
 
 
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start an online game session"
+        app:layout_constraintBottom_toTopOf="@+id/subCl"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.181"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.587" />
+
     <Button
         android:id="@+id/btnCreate"
-        android:layout_width="175dp"
-        android:layout_height="175dp"
+        android:layout_width="334dp"
+        android:layout_height="87dp"
         android:backgroundTint="@color/colorPrimary"
         android:text="Create Session"
         android:textColor="@android:color/black"
+        android:textSize="20sp"
         app:cornerRadius="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.067"
+        app:layout_constraintHorizontal_bias="0.493"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.206" />
+        app:layout_constraintVertical_bias="0.473" />
 
     <ImageView
         android:id="@+id/imageView3"
+
         android:layout_width="33dp"
         android:layout_height="34dp"
         android:src="@drawable/chess_knight"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/btnCreate"
         app:layout_constraintEnd_toEndOf="@+id/btnCreate"
         app:layout_constraintHorizontal_bias="0.485"
         app:layout_constraintStart_toStartOf="@+id/btnCreate"
         app:layout_constraintTop_toTopOf="@+id/btnCreate"
-        app:layout_constraintVertical_bias="0.319" />
+        app:layout_constraintVertical_bias="0.099" />
 
     <Button
         android:id="@+id/btnOffline"
-        android:layout_width="175dp"
-        android:layout_height="175dp"
+
+        android:layout_width="334dp"
+        android:layout_height="87dp"
         android:backgroundTint="@color/colorPrimary"
         android:text="Play Offline"
         android:textColor="@android:color/black"
+        android:textSize="20sp"
         app:cornerRadius="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.932"
+        app:layout_constraintHorizontal_bias="0.558"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.206" />
+        app:layout_constraintVertical_bias="0.189" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/subCl"
-        android:layout_width="272dp"
+        android:layout_width="match_parent"
         android:layout_height="228dp"
         android:layout_marginTop="52dp"
         android:background="@color/backgroundSecund"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnCreate"
-        app:layout_constraintVertical_bias="0.304">
+        app:layout_constraintVertical_bias="0.993">
 
         <Button
             android:id="@+id/btnJoin"
-            android:layout_width="254dp"
-            android:layout_height="104dp"
+            android:layout_width="334dp"
+            android:layout_height="87dp"
             android:layout_margin="12dp"
-
             android:backgroundTint="@color/colorPrimary"
             android:text="Join Session"
             android:textColor="@android:color/black"
+            android:textSize="20sp"
             app:cornerRadius="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -93,5 +110,29 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.141" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Insert the game id of the session your opponent has created"
+        app:layout_constraintBottom_toTopOf="@+id/subCl"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.489"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.989" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start a game without internet conexion"
+        app:layout_constraintBottom_toTopOf="@+id/subCl"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.242"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.212" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

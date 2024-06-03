@@ -220,4 +220,3 @@ public class MainActivity extends AppCompatActivity {
 
 }
 
-//BOTON DE REGISTER

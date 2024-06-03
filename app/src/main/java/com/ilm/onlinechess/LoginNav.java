@@ -52,6 +52,7 @@ public class LoginNav extends AppCompatActivity {
         NavController navController = navHostFragment.getNavController();
 
         // Configura ActionBar con NavController y AppBarConfiguration
+
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
     }

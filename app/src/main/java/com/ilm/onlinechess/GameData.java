@@ -39,6 +39,8 @@ public class GameData  {
     public static final int FINISHED = 4;
     public static final int OFFLINE = -1;
     public static boolean isLoged=false;
+    public static int hostTime = 600 ;
+    public static int guestTime = 600 ;
     public static int turn;
 
     private static FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -106,5 +108,4 @@ public class GameData  {
 }
 
 //bloqeuar si intenas crear sesion estand sin conexion
-//evitar que los dos puedan mover las dos piezas
-//comprobar todas las celdas del mismo color a ver si alguna tienen movimientos disponibles
+

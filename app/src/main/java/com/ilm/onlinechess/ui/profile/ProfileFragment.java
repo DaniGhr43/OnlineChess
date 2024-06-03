@@ -24,8 +24,7 @@ public class ProfileFragment extends Fragment {
     private User user;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
         binding = FragmentProfileBinding.inflate(inflater, container, false);
@@ -34,8 +33,9 @@ public class ProfileFragment extends Fragment {
 
        user = GameData._user.getValue();
         if(user==null)
-            binding.username.setText(("Guest"));
+            binding.username.setText(("Sign in to record here your personal stats"));
         else{
+
 
             binding.username.setText(String.valueOf(user.getUsername()));
             binding.email.setText(String.valueOf(user.getEmail()));

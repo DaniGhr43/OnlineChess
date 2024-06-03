@@ -10,21 +10,21 @@
 
     <TextView
         android:id="@+id/username"
-        android:layout_width="114dp"
-        android:layout_height="37dp"
-        android:text="TextView"
+        android:layout_width="259dp"
+        android:layout_height="61dp"
+        android:textSize="20sp"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.214"
+        app:layout_constraintHorizontal_bias="0.414"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.203" />
+        app:layout_constraintVertical_bias="0.137" />
 
     <TextView
         android:id="@+id/level"
         android:layout_width="119dp"
         android:layout_height="32dp"
-        android:text="TextView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.214"
@@ -36,7 +36,6 @@
         android:id="@+id/email"
         android:layout_width="117dp"
         android:layout_height="37dp"
-        android:text="TextView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.214"
@@ -48,7 +47,6 @@
         android:id="@+id/rank"
         android:layout_width="117dp"
         android:layout_height="30dp"
-        android:text="TextView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.214"

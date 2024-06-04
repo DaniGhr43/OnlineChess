@@ -18,11 +18,11 @@ public class GameModel {
     //private int turn;
     private String hostRank;
     private String guestRank;
+    private String hostUri;
+    private String guestUri;
     private int currentPlayer;
    private ArrayList<Integer> positions  ;
    private int GAME_STATUS ;
-
-
 
 
     public GameModel(){
@@ -30,11 +30,11 @@ public class GameModel {
         this.gameId = -1;
         this.winner = -1;
         this.hostPlayer = "";
-        this.guestPlayer = "";
         this.GAME_STATUS = 0;
         this.hostRank = "";
         this.guestPlayer = "";
-
+        this.guestUri="";
+        this.hostUri="";
         positions = new ArrayList<>();
     }
 
@@ -106,6 +106,20 @@ public class GameModel {
     public String getGuestRank() {
         return guestRank;
     }
+    public String getHostUri() {
+        return hostUri;
+    }
 
+    public String getGuestUri() {
+        return guestUri;
+    }
+
+    public void setHostUri(String hostUri) {
+        this.hostUri = hostUri;
+    }
+
+    public void setGuestUri(String guestUri) {
+        this.guestUri = guestUri;
+    }
 }
 

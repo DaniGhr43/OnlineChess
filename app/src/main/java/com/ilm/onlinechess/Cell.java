@@ -45,6 +45,7 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
         this.posX = posX;
         this.posY = posY;
         this.bitmaps = bitmaps;
+
         if(posY == 0 && posX == 0) {
             pieceType = ROOK;
         } else if (posY == 0 && posX == 1) {
@@ -82,7 +83,7 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
         } else if (posY == 7 && posX == 7) {
             pieceType = ROOK2;
         } else {
-            pieceType = EMPTY; // Si no hay pieza en la celda
+            pieceType = EMPTY;
         }
 
         changeBitmap();

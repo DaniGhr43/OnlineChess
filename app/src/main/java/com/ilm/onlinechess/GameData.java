@@ -2,6 +2,7 @@ package com.ilm.onlinechess;
 
 import static androidx.fragment.app.FragmentManager.TAG;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -36,10 +37,11 @@ public class GameData  {
     public static final int JOIN = 2;
     public static final int STARTED = 3;
     public static final int FINISHED = 4;
-
     public static boolean isLoged=false;
     public static int turn = 0;
     public static boolean isOffline;
+    public static Bitmap guestAvatar;
+    public static Bitmap hostAvatar ;
 
     private static FirebaseFirestore db = FirebaseFirestore.getInstance();
     public static void saveGameModel(GameModel model){
@@ -58,8 +60,6 @@ public class GameData  {
 
 
     public static void fetchGameModel(){
-
-
 
         db.collection("games")
                 .document(String.valueOf(gameModel.getValue().gameId))
@@ -97,6 +97,9 @@ public class GameData  {
                 .document(String.valueOf(user.getEmail()))
                 .set(user);
     }
+
+
+
 }
 
 //bloqeuar si intenas crear sesion estand sin conexion

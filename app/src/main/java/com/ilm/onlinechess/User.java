@@ -1,5 +1,8 @@
 package com.ilm.onlinechess;
 
+
+
+
 public class User {
     private String username;
     private int rank=100;
@@ -7,15 +10,11 @@ public class User {
     private double level=0;
     private String email;
     private boolean isHost;
+    private String urlImage;
+
 
     private int type;
-    public User(String username, int rank, String timespend, int level,String email) {
-        this.username = username;
-        this.rank = rank;
-        this.timespend = timespend;
-        this.level = level;
-        this.email = email;
-    }
+
     public User() {
         this.username = "Guest";
         this.rank = 100;
@@ -61,4 +60,19 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public void setUrlImage(String url){
+        this.urlImage=url;
+    }
+    public String getUrlImage(){
+        return urlImage;
+    }
+
+
+
+
+
+
+
+
 }

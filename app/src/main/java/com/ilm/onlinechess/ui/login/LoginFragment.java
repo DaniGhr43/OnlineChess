@@ -79,7 +79,7 @@ public class LoginFragment extends Fragment{
                 }
                 try{
 
-                    if(binding.gameID.getText().length()<=4 )
+                    if(binding.gameID.getText().length()>0 && binding.gameID.getText().length()<=4 )
                         joinOnlineGame();
                     else
                         binding.gameID.setError("Insert a valid game id");
@@ -107,6 +107,9 @@ public class LoginFragment extends Fragment{
         GameData.isOffline= true;
         model.setGameId(1234);
         GameData.saveGameModel(model);
+        model.setHostPlayer("LocalUser1");
+        model.setGuestPlayer("LocalUser2");
+
         Intent i = new Intent(getContext(),Game.class);
         startActivity(i);
     }
@@ -117,12 +120,27 @@ public class LoginFragment extends Fragment{
         model.setGAME_STATUS(GameData.CREATE);
         GameData.currentPlayer = GameData.WHITE;
         model.setGameId(r.nextInt(9999)+1);
-        model.setHostPlayer("Guest 1");
 
+        if(GameData.isLoged){
+            Log.d("currentPlayerr", String.valueOf(GameData.currentPlayer));
+
+            //Update GameData.bitmap
+            Log.d("Host uri", GameData._user.getValue().getUrlImage());
+
+            //Set that bitmap to the imageView
+
+
+        }
+        ;
         if(GameData.isLoged){
             model.setHostPlayer(GameData._user.getValue().getUsername());
             model.setHostRank(String.valueOf(GameData._user.getValue().getRank()));
+            model.setHostUri(GameData._user.getValue().getUrlImage());
 
+
+        }else{
+            model.setHostPlayer("Guest1");
+            model.setGuestPlayer("Waiting for player...");
         }
         GameData.saveGameModel(model);
 
@@ -156,11 +174,15 @@ public class LoginFragment extends Fragment{
                                 if(GameData.isLoged) {
                                     model.setGuestRank(String.valueOf(GameData._user.getValue().getRank()));
                                     model.setGuestPlayer(GameData._user.getValue().getUsername());
+                                    model.setGuestUri(GameData._user.getValue().getUrlImage());
 
                                 }
-
+                                //Update GameData.bitmap
+                                //Set that bitmap to the imageView
                                 GameData.saveGameModel(model);
                                 gameModel = model;
+
+
                                 Intent i = new Intent(getContext(), Game.class);
                                 startActivity(i);
 

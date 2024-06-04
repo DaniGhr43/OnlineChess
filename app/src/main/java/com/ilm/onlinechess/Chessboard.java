@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 public class Chessboard {
 
+
     public GridLayout grid;
     public Context context;
     public Cell[][] cells ;
@@ -37,11 +38,13 @@ public class Chessboard {
     private LifecycleOwner lifecycleOwner;
     private int turnCont;
 
+
     public Chessboard(GridLayout grid, Context context, LifecycleOwner lifecycleOwner){
         this.lifecycleOwner = lifecycleOwner;
         this.grid=grid;
         this.context = context;
         gameModel = GameData.gameModel.getValue();
+
 
         GameData.gameModel.observe(lifecycleOwner, new Observer<GameModel>() {
             @Override
@@ -225,7 +228,7 @@ public class Chessboard {
 
                                     GameData.saveGameModel(gameModel);
                                     updateStats();
-
+                                    return;
                                 }
                                 else if(GameData.turn == GameData.WHITE){
                                     Toast.makeText(context, "White wins", Toast.LENGTH_SHORT).show();
@@ -235,7 +238,7 @@ public class Chessboard {
                                     //GupdateStats(GameData.WHITE);
                                     GameData.saveGameModel(gameModel);
                                     updateStats();
-
+                                    return;
                                 }
                             }
                     }

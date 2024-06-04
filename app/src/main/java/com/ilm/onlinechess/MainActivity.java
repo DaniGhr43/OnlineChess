@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent= new Intent(getApplicationContext(), LoginNav.class);
                 FirebaseApp.initializeApp(getApplicationContext());
 
+
                 startActivity(intent);
             }
         });
@@ -86,8 +87,6 @@ public class MainActivity extends AppCompatActivity {
         try {
             signInIntent = mGoogleSignInClient.getSignInIntent();
 
-
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -95,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private void signOut() {
         // Firebase sign out
+
         mAuth.signOut();
         // Google sign out
         mGoogleSignInClient.signOut().addOnCompleteListener( this,
@@ -116,9 +116,10 @@ public class MainActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+
                             updateUI(user);
 
-                            loadUser();;
+                            loadUser();
 
                             Intent intent= new Intent(getApplicationContext(), LoginNav.class);
                             startActivity(intent);
@@ -127,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             GameData.isLoged = false;
+
                             updateUI(mAuth.getCurrentUser());
                         }
                     }
@@ -173,11 +175,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
+
     //Save the value of the loged user
     public void loadUser(){
-        FirebaseUser user = mAuth.getCurrentUser();
-        String email = user.getEmail();
-
+        FirebaseUser firebaseUser = mAuth.getCurrentUser();
+        String email = firebaseUser.getEmail();
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -190,10 +193,13 @@ public class MainActivity extends AppCompatActivity {
                         // Convertir el documento a un objeto GameModel
                         User user = documentSnapshot.toObject(User.class);
 
+                        //Update the user image becuase it could have changed
+                        user.setUrlImage(firebaseUser.getPhotoUrl().toString());
                         GameData.isLoged = true;
+
+
                         if (user != null) {
                             Log.d("USER LOADED","USER LOADED");
-
                             GameData.updateUser(user);
 
                         } else {
@@ -204,15 +210,15 @@ public class MainActivity extends AppCompatActivity {
                             //Log.d("ERRORSAVING USER: ","User not found, creatin user");
 
                             User logedUser = new User();
-                            logedUser.setEmail(MainActivity.mAuth.getCurrentUser().getEmail());
-                            logedUser.setUsername(MainActivity.mAuth.getCurrentUser().getDisplayName());
+                            logedUser.setEmail(firebaseUser.getEmail());
+                            logedUser.setUsername(firebaseUser.getDisplayName());
+                            logedUser.setUrlImage(firebaseUser.getPhotoUrl().toString());
+                            Log.d("USER LOADED","photo url :" + logedUser.getUrlImage());
 
                             GameData.updateUser(logedUser);
                         }
                     }
                 });
-
-
     }
 
 

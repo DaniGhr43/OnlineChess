@@ -1,19 +1,23 @@
 package com.ilm.onlinechess.ui.profile;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.ilm.onlinechess.GameData;
-import com.ilm.onlinechess.GameModel;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
+import com.ilm.onlinechess.Game.GameData;
 import com.ilm.onlinechess.User;
-import com.ilm.onlinechess.databinding.FragmentLoginBinding;
 import com.ilm.onlinechess.databinding.FragmentProfileBinding;
 
 
@@ -36,7 +40,7 @@ public class ProfileFragment extends Fragment {
             binding.username.setText(("Sign in to record here your personal stats"));
         else{
 
-
+            setUserImage(user.getUrlImage());
             binding.username.setText(String.valueOf(user.getUsername()));
             binding.email.setText(String.valueOf(user.getEmail()));
             binding.level.setText(String.valueOf((int)user.getLevel()));
@@ -51,6 +55,34 @@ public class ProfileFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
+    private void setUserImage(String uri) {
+        //if (GameData.isLoged ) {
+        Uri photoUrl = Uri.parse((uri));
+        // Uri photoUrl = Uri.parse(GameData._user.getValue().getUrlImage());
+        if (photoUrl != null) {
+            // Usar Glide para cargar la imagen
+            Glide.with(this)
+                    .asBitmap()
+                    .load(photoUrl)
+                    .into(new CustomTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
 
+                            binding.imageView5.setImageBitmap(resource);
+                        }
+
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+                            // Manejo del placeholder o acciones de limpieza si es necesario
+                        }
+
+                        @Override
+                        public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                            super.onLoadFailed(errorDrawable);
+                            // Manejo de errores
+                        }
+                    });
+        }
+    }
 
 }

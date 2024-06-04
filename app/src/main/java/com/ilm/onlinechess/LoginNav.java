@@ -30,20 +30,14 @@ public class LoginNav extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.appBarLoginNav.toolbar);
-        binding.appBarLoginNav.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
 
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
 
         // Configura AppBarConfiguration con los IDs de los destinos de nivel superior
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_game, R.id.nav_profile)
+                R.id.nav_home,  R.id.nav_profile)
                 .setOpenableLayout(drawer)
                 .build();
 

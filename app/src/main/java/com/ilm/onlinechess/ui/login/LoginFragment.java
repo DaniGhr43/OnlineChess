@@ -19,9 +19,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.ilm.onlinechess.Game;
-import com.ilm.onlinechess.GameData;
-import com.ilm.onlinechess.GameModel;
+import com.ilm.onlinechess.Game.Game;
+import com.ilm.onlinechess.Game.GameData;
+import com.ilm.onlinechess.Game.GameModel;
 
 import com.ilm.onlinechess.Network;
 
@@ -60,7 +60,7 @@ public class LoginFragment extends Fragment{
             public void onClick(View v) {
 
                 if (!Network.isConnected(getContext())) {
-                    Toast.makeText(getContext(), "Please connect to internet to create online session", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Please connect to internet to create or join online session", Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -115,35 +115,26 @@ public class LoginFragment extends Fragment{
     }
     public void createOnlineGame(){
         GameModel model = new GameModel();
-
+        GameData.isOffline= false;
         Random r = new Random();
         model.setGAME_STATUS(GameData.CREATE);
-        GameData.currentPlayer = GameData.WHITE;
         model.setGameId(r.nextInt(9999)+1);
+        GameData.currentPlayer = GameData.WHITE;
 
-        if(GameData.isLoged){
-            Log.d("currentPlayerr", String.valueOf(GameData.currentPlayer));
-
-            //Update GameData.bitmap
-            Log.d("Host uri", GameData._user.getValue().getUrlImage());
-
-            //Set that bitmap to the imageView
-
-
-        }
-        ;
+        GameData.turn=0;
         if(GameData.isLoged){
             model.setHostPlayer(GameData._user.getValue().getUsername());
             model.setHostRank(String.valueOf(GameData._user.getValue().getRank()));
             model.setHostUri(GameData._user.getValue().getUrlImage());
 
 
-        }else{
+        }else
             model.setHostPlayer("Guest1");
-            model.setGuestPlayer("Waiting for player...");
-        }
-        GameData.saveGameModel(model);
 
+
+        model.setGuestPlayer("Waiting for player...");
+        model.setGuestRank("0");
+        GameData.saveGameModel(model);
         gameModel = model;
 
         Intent i = new Intent(getContext(), Game.class);
@@ -188,7 +179,7 @@ public class LoginFragment extends Fragment{
 
                                 // startGame();
                             }else{
-                                binding.gameID.setError("The game has already ended");
+                                binding.gameID.setError("The game has already ended or started");
 
                             }
 

@@ -1,10 +1,12 @@
-package com.ilm.onlinechess;
+package com.ilm.onlinechess.Game;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.Log;
+
+import com.ilm.onlinechess.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;

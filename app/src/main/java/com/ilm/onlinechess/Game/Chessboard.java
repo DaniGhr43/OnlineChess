@@ -1,4 +1,4 @@
-package com.ilm.onlinechess;
+package com.ilm.onlinechess.Game;
 
 
 import android.content.Context;
@@ -14,6 +14,8 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.ilm.onlinechess.R;
+import com.ilm.onlinechess.User;
 
 import java.util.ArrayList;
 

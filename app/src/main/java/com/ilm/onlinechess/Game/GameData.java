@@ -1,26 +1,17 @@
-package com.ilm.onlinechess;
-
-import static androidx.fragment.app.FragmentManager.TAG;
+package com.ilm.onlinechess.Game;
 
 import android.graphics.Bitmap;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.ilm.onlinechess.ui.login.LoginFragment;
-
-import java.util.Random;
-import java.util.concurrent.Executor;
+import com.ilm.onlinechess.User;
 
 public class GameData  {
 

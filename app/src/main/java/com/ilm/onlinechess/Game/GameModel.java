@@ -1,4 +1,4 @@
-package com.ilm.onlinechess;
+package com.ilm.onlinechess.Game;
 
 import androidx.lifecycle.MutableLiveData;
 

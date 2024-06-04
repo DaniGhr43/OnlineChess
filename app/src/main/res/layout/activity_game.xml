@@ -74,25 +74,25 @@
                 <TextView
                     android:id="@+id/gameHost"
                     android:layout_width="136dp"
-                    android:layout_height="25dp"
+                    android:layout_height="20dp"
                     android:text="LocalUser1"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.058"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.865" />
+                    app:layout_constraintVertical_bias="0.962" />
 
                 <TextView
                     android:id="@+id/hostRank"
                     android:layout_width="140dp"
-                    android:layout_height="25dp"
+                    android:layout_height="20dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.865"
                     app:layout_constraintStart_toEndOf="@+id/gameHost"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.865" />
+                    app:layout_constraintVertical_bias="0.962" />
 
                 <ImageView
                     android:id="@+id/avatarHost"
@@ -106,6 +106,18 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.262"
                     app:srcCompat="@drawable/avatar" />
+
+                <ImageView
+                    android:id="@+id/trophy1"
+                    android:layout_width="37dp"
+                    android:layout_height="20dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.582"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.99"
+                    app:srcCompat="@drawable/trofeo" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -128,6 +140,18 @@
             android:layout_weight="2"
             android:background="@color/backgroundSecund">
 
+            <ImageView
+                android:id="@+id/trophy2"
+                android:layout_width="29dp"
+                android:layout_height="21dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.56"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.062"
+                app:srcCompat="@drawable/trofeo" />
+
             <Button
                 android:id="@+id/bntStart"
                 android:layout_width="127dp"
@@ -138,7 +162,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.809" />
 
             <TextView
                 android:id="@+id/gameGuest"
@@ -150,7 +175,7 @@
                 app:layout_constraintHorizontal_bias="0.058"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.145" />
+                app:layout_constraintVertical_bias="0.062" />
 
             <TextView
                 android:id="@+id/guestRank"
@@ -159,10 +184,10 @@
                 android:text=" "
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.866"
+                app:layout_constraintHorizontal_bias="0.846"
                 app:layout_constraintStart_toEndOf="@+id/gameGuest"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.126" />
+                app:layout_constraintVertical_bias="0.062" />
 
             <ImageView
                 android:id="@+id/avatarGuest"

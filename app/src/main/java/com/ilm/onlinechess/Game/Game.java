@@ -1,7 +1,7 @@
-package com.ilm.onlinechess;
+package com.ilm.onlinechess.Game;
 
-import static android.content.ContentValues.TAG;
-
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,41 +9,26 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import android.app.AlertDialog;
-import android.app.Application;
 import android.app.Dialog;
-import android.app.GameManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.StorageReference;
+import com.ilm.onlinechess.LoginNav;
+import com.ilm.onlinechess.R;
 import com.ilm.onlinechess.databinding.ActivityGameBinding;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-
-import java.io.File;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 public class Game extends AppCompatActivity  {
 
@@ -61,10 +46,15 @@ public class Game extends AppCompatActivity  {
 
         binding = ActivityGameBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        gameModel=GameData.gameModel.getValue();
+        gameModel= GameData.gameModel.getValue();
 
         if(!GameData.isOffline){
             GameData.fetchGameModel();
+        }else{
+
+            binding.trophy1.setVisibility(com.google.android.material.R.id.invisible);
+            binding.trophy2.setVisibility(com.google.android.material.R.id.invisible);
+            binding.guestRank.setVisibility(com.google.android.material.R.id.invisible);
         }
 
         updateUI();
@@ -102,7 +92,26 @@ public class Game extends AppCompatActivity  {
         }
 
 */
+        OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
+        dispatcher.addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Aquí puedes agregar el código que deseas ejecutar cuando se pulsa el botón de atrás
+                new AlertDialog.Builder(Game.this)
+                        .setMessage("¿Are you sure you want to exit?")
+                        .setCancelable(false)
+                        .setPositiveButton("Sí", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
 
+
+                                GameData.gameModel=  new MutableLiveData<>();
+                                finish();
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
+            }
+        });
         //Una vez que ya tengo la URI
 
 
@@ -161,8 +170,10 @@ public class Game extends AppCompatActivity  {
             @Override
             public void onClick(View v) {
 
-                //updateFirebase();
-                startGame();
+
+                if(!binding.gameGuest.getText().toString().equals("Waiting for player..."))
+                    startGame();
+
 
             }
         });
@@ -224,6 +235,7 @@ public class Game extends AppCompatActivity  {
 
     public void startGame(){
         updateUI();
+
 
 
         gameModel.setGameId(GameData.gameModel.getValue().gameId);
@@ -294,23 +306,6 @@ public class Game extends AppCompatActivity  {
    }
 
 
-    @Override
-    public void onBackPressed() {
-        // Aquí puedes agregar el código que deseas ejecutar cuando se pulsa el botón de atrás
-        // Por ejemplo, mostrar un diálogo de confirmación
-        super.onBackPressed();
-        new AlertDialog.Builder(this)
-                .setMessage("¿Seguro que quieres salir?")
-                .setCancelable(false)
-                .setPositiveButton("Sí", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Game.super.onBackPressed();
 
-                        GameData.gameModel=  new MutableLiveData<>();
-                    }
-                })
-                .setNegativeButton("No", null)
-                .show();
-    }
    //COMPROBAR ISLOGED
 }

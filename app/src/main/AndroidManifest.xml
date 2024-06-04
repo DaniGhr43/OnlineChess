@@ -18,12 +18,6 @@
             android:name=".Game"
             android:exported="false" />
         <activity
-            android:name=".ItemDetailHostActivity"
-            android:exported="false"
-            android:label="@string/title_activity_item_detail_host"
-            android:resizeableActivity="true"
-            tools:targetApi="24" />
-        <activity
             android:name=".LoginNav"
             android:exported="false"
             android:label="@string/title_activity_login_nav"

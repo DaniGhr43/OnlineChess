@@ -3,6 +3,7 @@ package com.ilm.onlinechess;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 
+import android.app.Application;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -22,21 +23,22 @@ import com.ilm.onlinechess.databinding.ActivityMainBinding;
 
 import java.util.concurrent.TimeUnit;
 
-public class Game extends AppCompatActivity {
+public class Game extends AppCompatActivity  {
 
     ActivityGameBinding binding;
 
     Chessboard board;
     private static GameModel gameModel ;
 
-    private String hostPlayer;
-
     private Button btnExit, btnReturn;
-    Dialog dialog;
+    private boolean clocksStarted = false;
+    private Dialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
+
 
         binding = ActivityGameBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -47,10 +49,7 @@ public class Game extends AppCompatActivity {
 
 
         //If the game is CREATE, not JOIN, then start a timer
-        if(gameModel.getGAME_STATUS()==GameData.CREATE){
-            startTimer(600);
-            binding.gameHost.setText("Wating for player... Time until game is cancelled:");
-        }
+
 
         GameData.gameModel.observe(this, new Observer<GameModel>() {
             @Override
@@ -87,7 +86,7 @@ public class Game extends AppCompatActivity {
             }
         });
 
-        if(GameData.gameModel != null && gameModel.getGAME_STATUS()!=GameData.OFFLINE){
+        if(!GameData.isOffline){
             GameData.fetchGameModel();
         }
 
@@ -141,11 +140,12 @@ public class Game extends AppCompatActivity {
         // gameModel
         if(gameModel!=null){
 
+            //if(gameModel.getGAME_STATUS()==GameData.STARTED && !clocksStarted){
+            //    startTimer(30);
+             //   clocksStarted=true;
+            //}
 
-
-
-
-            if(gameModel.getGAME_STATUS()==GameData.STARTED || gameModel.getGAME_STATUS()==GameData.OFFLINE)
+            if(gameModel.getGAME_STATUS()==GameData.STARTED )
                 binding.cl2.removeView(binding.bntStart);
 
             if(GameData._user.getValue() != null){
@@ -162,10 +162,13 @@ public class Game extends AppCompatActivity {
                 TextView winner = dialog.findViewById(R.id.winner);
                 if(gameModel.getWinner() == GameData.WHITE)
                     winner.setText("White");
-                else if(gameModel.getWinner() == GameData.WHITE)
+                else if(gameModel.getWinner() == GameData.BLACK)
                     winner.setText("Black");
 
+                GameData.turn=GameData.WHITE;
+
                 dialog.show();
+
             }
 
         }
@@ -174,35 +177,31 @@ public class Game extends AppCompatActivity {
 
     }
 
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(GameData.currentPlayer == GameData.WHITE){
+            gameModel.setWinner(GameData.BLACK);
+
+        }
+
+        if(GameData.currentPlayer == GameData.BLACK)
+            gameModel.setWinner(GameData.WHITE);
+        updateGameData(gameModel);
+    }
+
     public void startGame(){
         updateUI();
 
         gameModel.setGameId(GameData.gameModel.getValue().gameId);
-
-        if(gameModel.getGAME_STATUS() != GameData.OFFLINE)
-            gameModel.setGAME_STATUS(GameData.STARTED);
+        gameModel.setGAME_STATUS(GameData.STARTED);
 
         updateGameData(gameModel);
 
     }
 
-    public void updateStats(){
 
-        if(GameData.currentPlayer == gameModel.getWinner()){
-            User user =  GameData._user.getValue();
-            user.setRank(user.getRank()+20);
-            user.setLevel(user.getLevel()+0.25);
-
-            GameData.updateUser(user);
-        }else{
-            User user =  GameData._user.getValue();
-            if(user.getRank()>0)
-                user.setRank(user.getRank()-20);
-            user.setLevel(user.getLevel()+0.10);
-
-            GameData.updateUser(user);
-        }
-    }
     public void updateGameData(GameModel model){
 
 
@@ -211,32 +210,38 @@ public class Game extends AppCompatActivity {
 
 
 
-    protected void onDestroy() {
-        super.onDestroy();
 
-        gameModel.setGAME_STATUS(GameData.FINISHED);
-        updateGameData(gameModel);
-        // Código que deseas ejecutar cuando se cierre la aplicación
-        updateStats();
-    }
 
-    private void startTimer(int seconds) {
 
-        CountDownTimer timer = new CountDownTimer(seconds * 1000, 1000) {
+    private long minutes ;
+    private long remainingSeconds ;;
+   /* private void startTimer(int limitSeconds) {
+
+        CountDownTimer timer = new CountDownTimer(limitSeconds * 1000, 1000) {
 
             @Override
             public void onTick(long millisUntilFinished) {
 
                 if(GameData.turn == GameData.WHITE){
                     GameData.hostTime--;
-                    binding.timeHost.setText(String.valueOf(GameData.hostTime));
+                    minutes=GameData.hostTime/60;
+                    remainingSeconds =GameData.hostTime - TimeUnit.MINUTES.toSeconds(minutes);
+                    binding.timeHost.setText(minutes + " : " +remainingSeconds);
                 }else{
                     GameData.guestTime--;
                     binding.timeGuest.setText(String.valueOf(GameData.guestTime));
                 }
 
-
-                binding.hostRank.setText(String.valueOf(millisUntilFinished / 1000));
+                if( GameData.hostTime <=0){
+                    gameModel.setGAME_STATUS(GameData.FINISHED);
+                    gameModel.setWinner(GameData.BLACK);
+                    GameData.saveGameModel(gameModel);
+                }
+                if( GameData.guestTime <=0){
+                    gameModel.setGAME_STATUS(GameData.FINISHED);
+                    gameModel.setWinner(GameData.WHITE);
+                    GameData.saveGameModel(gameModel);
+                }
 
             }
             @Override
@@ -247,6 +252,6 @@ public class Game extends AppCompatActivity {
         };
         timer.start();
 
-    }
+    }*/
 
 }

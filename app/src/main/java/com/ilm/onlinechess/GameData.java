@@ -3,6 +3,7 @@ package com.ilm.onlinechess;
 import static androidx.fragment.app.FragmentManager.TAG;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
@@ -27,28 +28,25 @@ public class GameData  {
 
     //To acces the gameModel of this class us this variable
     public static LiveData<GameModel> gameModel = _gameModel;
-
     public static int currentPlayer;
     public static MutableLiveData<User> _user = new MutableLiveData<>();
-    public static int tempGameID= 0 ;
     public static final int WHITE = 0;
     public static final int BLACK = 1;
     public static final int CREATE = 1;
     public static final int JOIN = 2;
     public static final int STARTED = 3;
     public static final int FINISHED = 4;
-    public static final int OFFLINE = -1;
+
     public static boolean isLoged=false;
-    public static int hostTime = 600 ;
-    public static int guestTime = 600 ;
-    public static int turn;
+    public static int turn = 0;
+    public static boolean isOffline;
 
     private static FirebaseFirestore db = FirebaseFirestore.getInstance();
     public static void saveGameModel(GameModel model){
         _gameModel.postValue(model);
         gameModel=_gameModel;
 
-        if(model.getGAME_STATUS() != OFFLINE){
+        if(!isOffline){
             db.collection("games")
                     .document(String.valueOf(model.gameId))
                     .set(model);
@@ -57,14 +55,6 @@ public class GameData  {
 
 
     }
-    public static void saveGameModelOffline(GameModel model){
-        _gameModel.postValue(model);
-        gameModel=_gameModel;
-
-
-
-    }
-
 
 
     public static void fetchGameModel(){
@@ -77,6 +67,8 @@ public class GameData  {
                                 @Override
                                 public void onEvent(@Nullable DocumentSnapshot snapshot,
                                                     @Nullable FirebaseFirestoreException e) {
+
+
                                     GameModel model = snapshot.toObject(GameModel.class);
                                     if (e != null) {
                                         Log.w("fetchGameModel", "Listen failed.", e);

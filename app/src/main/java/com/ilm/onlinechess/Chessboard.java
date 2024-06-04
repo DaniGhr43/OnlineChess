@@ -1,6 +1,6 @@
 package com.ilm.onlinechess;
 
-import android.app.GameManager;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -121,31 +121,26 @@ public class Chessboard {
 
 
                 cell.setOnClickListener(new View.OnClickListener() {
-
                         @Override
                         public void onClick(View v) {
                             Log.d("CLOICK", String.valueOf(gameModel.getGAME_STATUS()));
-
-
                             Log.d("dd", String.valueOf(GameData.gameModel.getValue().getGAME_STATUS()));
-                            if(GameData.gameModel.getValue().getGAME_STATUS()==GameData.STARTED || gameModel.getGAME_STATUS() == GameData.OFFLINE){
+
+                            if(GameData.gameModel.getValue().getGAME_STATUS()==GameData.STARTED ){
                                 for(Cell[] cel : cells){
                                     for(Cell c : cel){
                                         c.refreshChessboard(cells);
                                     }
                                 }
 
-
                                 cell.refreshChessboard(cells);
 
-                                if(GameData.currentPlayer == GameData.turn || gameModel.getGAME_STATUS() == GameData.OFFLINE){
+                                if(GameData.currentPlayer == GameData.turn ){
                                     click(cell);
                                 }
 
-
                             }
                         }
-
                 });
 
 
@@ -162,9 +157,12 @@ public class Chessboard {
     private void changeTurn() {
         GameData.turn=((GameData.turn == WHITE) ? BLACK : WHITE);
 
+        if(GameData.isOffline)
+            GameData.currentPlayer=((GameData.currentPlayer == WHITE) ? BLACK : WHITE);
+
     }
 
-    private    boolean mate = true;
+    private boolean mate = true;
     public void click(Cell cell) {
         boolean isBeingCaptured = false;
         boolean canChangeTurn = false;
@@ -172,7 +170,7 @@ public class Chessboard {
 
         turnCont++;
 
-        Log.d("CLOICK22", String.valueOf(GameData.currentPlayer));
+        Log.d("CLOCK", String.valueOf(GameData.turn));
 
         for (Cell[] cel : cells) {
             for (Cell c : cel) {
@@ -182,10 +180,6 @@ public class Chessboard {
 
 
         //Change the state of selected in the clicked and last clicked cell if it can be changed
-        if(GameData.currentPlayer == GameData.turn){
-
-        }
-
         if ( (cell.pieceType < 6 && GameData.turn == WHITE )|| (cell.pieceType > 5 && GameData.turn == BLACK) || cell.pieceType == cell.EMPTY || cell.isShowingAvailableMove )
             cell.setSeleccionada(!cell.seleccionada);
 
@@ -228,8 +222,9 @@ public class Chessboard {
                                     //Refresh the state of the gamemodel to end the game
                                     gameModel.setGAME_STATUS(GameData.FINISHED);
                                     gameModel.setWinner(GameData.BLACK);
-                                    //updateStats(GameData.BLACK);
+
                                     GameData.saveGameModel(gameModel);
+                                    updateStats();
                                 }
                                 else if(GameData.turn == GameData.WHITE){
                                     Toast.makeText(context, "White wins", Toast.LENGTH_SHORT).show();
@@ -238,6 +233,7 @@ public class Chessboard {
                                     gameModel.setWinner(GameData.WHITE);
                                     //GupdateStats(GameData.WHITE);
                                     GameData.saveGameModel(gameModel);
+                                    updateStats();
                                 }
                             }
                     }
@@ -288,7 +284,6 @@ public class Chessboard {
 
         }
 
-        //If the game is offline just change turn if available, if the game is online  change the turn when the click is finished in the client who is not moving
         if (canChangeTurn)
             changeTurn();
 
@@ -315,6 +310,7 @@ public class Chessboard {
                        if (cells[moves[0]][moves[1]].checkKingIsSafe(c)){
                            Log.d("PIECETYPE", String.valueOf(c.pieceType));
                            Log.d("PIECETYPE", "X: "+ moves[0] + ", Y: " + moves[1]);
+                           //Undo turn changes
                            changeTurn();
                            return false;
                        }
@@ -324,13 +320,29 @@ public class Chessboard {
                }
            }
        }
-
+       //Undo turn changes
        changeTurn();
 
         return true;
     }
 
+    public void updateStats(){
 
+        if(GameData.currentPlayer == gameModel.getWinner() && GameData.isLoged){
+            User user =  GameData._user.getValue();
+            user.setRank(user.getRank()+20);
+            user.setLevel(user.getLevel()+0.25);
+
+            GameData.updateUser(user);
+        }else if(GameData.isLoged){
+            User user =  GameData._user.getValue();
+            if(user.getRank()>0)
+                user.setRank(user.getRank()-20);
+            user.setLevel(user.getLevel()+0.10);
+
+            GameData.updateUser(user);
+        }
+    }
 
 
 }

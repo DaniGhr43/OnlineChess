@@ -211,7 +211,7 @@ public class Chessboard {
                     auxPositions.add(cell.posY);
 
                     gameModel.setPositions(auxPositions);
-                    GameData.saveGameModel(gameModel);
+
 
                     //first check if the king is checked,then check if its mate
 
@@ -225,6 +225,7 @@ public class Chessboard {
 
                                     GameData.saveGameModel(gameModel);
                                     updateStats();
+
                                 }
                                 else if(GameData.turn == GameData.WHITE){
                                     Toast.makeText(context, "White wins", Toast.LENGTH_SHORT).show();
@@ -234,10 +235,12 @@ public class Chessboard {
                                     //GupdateStats(GameData.WHITE);
                                     GameData.saveGameModel(gameModel);
                                     updateStats();
+
                                 }
                             }
                     }
 
+                    GameData.saveGameModel(gameModel);
 
                     canChangeTurn=true;
 

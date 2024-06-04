@@ -15,8 +15,6 @@ public class GameModel {
     private String hostPlayer;
     private String guestPlayer;
 
-
-
     //private int turn;
     private String hostRank;
     private String guestRank;

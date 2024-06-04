@@ -43,7 +43,8 @@ dependencies {
     implementation("com.google.firebase:firebase-auth:21.0.8")
     implementation("com.google.firebase:firebase-database")
     implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-storage:20.7.0")
+    implementation("com.google.firebase:firebase-storage:21.0.0")
+
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")

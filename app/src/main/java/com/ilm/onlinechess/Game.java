@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.storage.StorageReference;
 import com.ilm.onlinechess.databinding.ActivityGameBinding;
 import com.ilm.onlinechess.databinding.ActivityMainBinding;
 
@@ -60,6 +61,11 @@ public class Game extends AppCompatActivity  {
 
             }
         });
+
+
+        //Cloud storage reference for photos
+       // StorageReference storageRef = storage.getReference();
+
 
 
         dialog = new Dialog (this);

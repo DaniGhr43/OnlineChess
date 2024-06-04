@@ -18,7 +18,7 @@
         app:layout_constraintHorizontal_bias="0.867"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.975" />
+        app:layout_constraintVertical_bias="0.965" />
 
     <Button
         android:id="@+id/btnCreate"
@@ -40,7 +40,6 @@
 
     <Button
         android:id="@+id/btnOffline"
-
         android:layout_width="140dp"
         android:layout_height="140dp"
         android:backgroundTint="@color/colorPrimary"
@@ -74,7 +73,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/subCl"
         android:layout_width="match_parent"
-        android:layout_height="273dp"
+        android:layout_height="280dp"
         android:layout_marginTop="52dp"
         android:background="@color/backgroundSecund"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -82,7 +81,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnCreate"
-        app:layout_constraintVertical_bias="0.36">
+        app:layout_constraintVertical_bias="0.0">
 
         <Button
             android:id="@+id/btnJoin"
@@ -112,18 +111,22 @@
             android:inputType="text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.502"
+            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.141" />
+            app:layout_constraintVertical_bias="0.266" />
 
         <TextView
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Insert the game id of the session your opponent has created"
-            tools:layout_editor_absoluteX="18dp"
-            tools:layout_editor_absoluteY="1dp" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.489"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.061" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView

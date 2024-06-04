@@ -194,7 +194,6 @@ public class MainActivity extends AppCompatActivity {
                         if (user != null) {
                             Log.d("USER LOADED","USER LOADED");
 
-
                             GameData.updateUser(user);
 
                         } else {

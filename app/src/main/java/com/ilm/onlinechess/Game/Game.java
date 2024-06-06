@@ -72,26 +72,7 @@ public class Game extends AppCompatActivity  {
         });
 
 
-/*
-        if(GameData.isLoged){
-            Log.d("currentPlayerr", String.valueOf(GameData.currentPlayer));
-            if(GameData.currentPlayer == GameData.WHITE){
-                //Update GameData.bitmap
-                Log.d("Host uri", GameData._user.getValue().getUrlImage());
 
-                gameModel.setHostUri(GameData._user.getValue().getUrlImage());
-                //Set that bitmap to the imageView
-                GameData.saveGameModel(gameModel);
-            }else {
-                Log.d("Guest uri", GameData._user.getValue().getUrlImage());
-                //Update GameData.bitmap
-                //Set that bitmap to the imageView
-                gameModel.setGuestUri(GameData._user.getValue().getUrlImage());
-                GameData.saveGameModel(gameModel);
-            }
-        }
-
-*/
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -100,11 +81,12 @@ public class Game extends AppCompatActivity  {
                 new AlertDialog.Builder(Game.this)
                         .setMessage("¿Are you sure you want to exit?")
                         .setCancelable(false)
-                        .setPositiveButton("Sí", new DialogInterface.OnClickListener() {
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
 
-
                                 GameData.gameModel=  new MutableLiveData<>();
+                                GameData.turn = 0;
+
                                 finish();
                             }
                         })
@@ -165,7 +147,6 @@ public class Game extends AppCompatActivity  {
 
         //Start game
         board.createCells();
-
         binding.bntStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -202,8 +183,9 @@ public class Game extends AppCompatActivity  {
                 else
                     binding.avatarGuest.setImageResource(R.drawable.avatar);
 
-
-
+            }else {
+                binding.guestRank.setText("0");
+                binding.hostRank.setText(("0"));
             }
 
             if(gameModel.getGAME_STATUS()==GameData.STARTED )
@@ -236,12 +218,10 @@ public class Game extends AppCompatActivity  {
     public void startGame(){
         updateUI();
 
-
-
         gameModel.setGameId(GameData.gameModel.getValue().gameId);
         gameModel.setGAME_STATUS(GameData.STARTED);
 
-        GameData.saveGameModel(gameModel);
+        GameData.saveGameModel(gameModel, true);
 
     }
 

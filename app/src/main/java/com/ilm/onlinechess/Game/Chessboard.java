@@ -17,6 +17,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.ilm.onlinechess.R;
 import com.ilm.onlinechess.User;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 
 public class Chessboard {
@@ -39,14 +44,18 @@ public class Chessboard {
     private GameModel gameModel = new GameModel();
     private LifecycleOwner lifecycleOwner;
     private int turnCont;
-
+    private Socket socket;
+    private OutputStream out;
+    private int gameId;
+    private boolean isBeingCaptured = false;
+    private boolean canChangeTurn = false;
 
     public Chessboard(GridLayout grid, Context context, LifecycleOwner lifecycleOwner){
         this.lifecycleOwner = lifecycleOwner;
         this.grid=grid;
         this.context = context;
         gameModel = GameData.gameModel.getValue();
-
+        this.gameId = gameId;
 
         GameData.gameModel.observe(lifecycleOwner, new Observer<GameModel>() {
             @Override
@@ -57,19 +66,73 @@ public class Chessboard {
                 if (clickedPositions != null && !clickedPositions.isEmpty()){
 
 
-                    //Only change turn in the receveiver client
-
-
                     click(cells[clickedPositions.get(0)][clickedPositions.get(1)]);
                     click(cells[clickedPositions.get(2)][clickedPositions.get(3)]);
-
-
 
                 }
 
             }
         });
 
+        if(!GameData.isOffline){
+            joinGame();
+        }
+
+    }
+    public void joinGame() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String serverAddress = "13.36.252.117"; // Dirección IP o nombre de host del servidor
+                int serverPort = 100; // Puerto del servidor
+
+                try {
+                    socket = new Socket(serverAddress, serverPort);
+
+
+                    //BufferedReader consoleInput = new BufferedReader(new InputStreamReader(System.in));
+
+                    //To join the game, send the gameID to the server
+                    out = socket.getOutputStream();
+                    //System.out.print(in.readLine());
+                    String gameId = String.valueOf(gameModel.getGameId());
+                    out.write((gameId + "\n").getBytes());
+                    out.flush();
+
+                    // Thread for reading server messages
+                    new Thread(() -> {
+                        String serverResponse;
+                        try {
+                            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+                            while ((serverResponse = in.readLine()) != null) {
+                                System.out.println(serverResponse);
+                                String serverResponseStr = serverResponse.substring(1, serverResponse.length() - 1).replaceAll("\\s+", "");
+                                String[] serverResponseArray = serverResponseStr.split(",");
+                                ArrayList<Integer> positions = new ArrayList<>();
+
+                                for (String pos : serverResponseArray) {
+                                    positions.add(Integer.parseInt(pos));
+                                }
+                                gameModel.setPositions(positions);
+                                GameData.saveGameModel(gameModel,false);
+                            }
+                            Log.d("FINN ","SIIS");
+
+                            in.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+
+
+                    //a
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
 
@@ -106,7 +169,6 @@ public class Chessboard {
                 GridLayout.LayoutParams params = new GridLayout.LayoutParams();
                 params.width = 0;
                 params.height =0;
-
                 params.columnSpec = GridLayout.spec(x, 1f);
                 params.rowSpec = GridLayout.spec(y, 1f);
 
@@ -138,8 +200,6 @@ public class Chessboard {
                                     }
                                 }
 
-                                cell.refreshChessboard(cells);
-
                                 if(GameData.currentPlayer == GameData.turn ){
                                     click(cell);
                                 }
@@ -169,8 +229,8 @@ public class Chessboard {
 
     private boolean mate = true;
     public void click(Cell cell) {
-        boolean isBeingCaptured = false;
-        boolean canChangeTurn = false;
+         isBeingCaptured = false;
+         canChangeTurn = false;
 
 
         turnCont++;
@@ -206,90 +266,19 @@ public class Chessboard {
             //if the cell is showing an available move(the bitmap of the cell is the dot) and is clicked, move the piece
             if (cell.isShowingAvailableMove) {
                 //If its its turn
-                if ((GameData.turn== WHITE && lastSelectedCell.pieceType < 6 && lastSelectedCell.pieceType != -1) || (GameData.turn == BLACK && lastSelectedCell.pieceType > 5)) {
-                    isBeingCaptured = cell.movePiece(lastSelectedCell);
-                    ArrayList<Integer> auxPositions = new ArrayList<>();
-
-                    auxPositions.add(lastSelectedCell.posX);
-                    auxPositions.add(lastSelectedCell.posY);
-                    auxPositions.add(cell.posX);
-                    auxPositions.add(cell.posY);
-
-                    gameModel.setPositions(auxPositions);
-
-
-                    //first check if the king is checked,then check if its mate
-
-                    if(cell.whiteKing.checkCheckMate() || cell.blackKing.checkCheckMate()){
-                            if(checkWin()){
-                                if(GameData.turn == GameData.BLACK){
-                                    Toast.makeText(context, "Black wins", Toast.LENGTH_SHORT).show();
-                                    //Refresh the state of the gamemodel to end the game
-                                    gameModel.setGAME_STATUS(GameData.FINISHED);
-                                    gameModel.setWinner(GameData.BLACK);
-
-                                    GameData.saveGameModel(gameModel);
-                                    updateStats();
-                                    return;
-                                }
-                                else if(GameData.turn == GameData.WHITE){
-                                    Toast.makeText(context, "White wins", Toast.LENGTH_SHORT).show();
-
-                                    gameModel.setGAME_STATUS(GameData.FINISHED);
-                                    gameModel.setWinner(GameData.WHITE);
-                                    //GupdateStats(GameData.WHITE);
-                                    GameData.saveGameModel(gameModel);
-                                    updateStats();
-                                    return;
-                                }
-                            }
-                    }
-
-                    GameData.saveGameModel(gameModel);
-
-                    canChangeTurn=true;
-
-                }
-
+                moveCell(cell);
             }
-            //Hide the last availables moves
+            //Hide the available moves that are being showed in the last selected cell
             for (int last[] : lastSelections) {
                 cells[last[0]][last[1]].hideAvailableMoves();
-
-
             }
 
             //show the availables moves of the cell. this is only executed if this cell is not being captured
-            if (!isBeingCaptured) {
-                lastSelections.clear();
+            showAvailableMoves(cell);
 
-
-                for (int moves[] : availableMoves) {
-                    int X = moves[0];
-                    int Y = moves[1];
-                    //correct values inside the board
-                    if (X >= 0 && Y >= 0 && X < 8 && Y < 8) {
-                        cells[X][Y].showAvailableMove(cell);
-                        lastSelections.add(new int[]{X, Y});
-                    }
-                }
-
-
-            }
-            //if the cell is being unselected, hide all the last shown availables moves
+       //if the cell is being unselected, hide all the availables moves that are being showed
         } else {
-            if (availableMoves!=null){
-                for (  int moves[] : availableMoves) {
-                    int X = moves[0];
-                    int Y = moves[1];
-
-                    if (X >= 0 && Y >= 0 && X < 8 && Y < 8) {
-                        cells[X][Y].hideAvailableMoves();
-                    }
-                }
-                cell.availableMoves=new ArrayList<>();
-            }
-
+            hideLastShownMoves(cell);
         }
 
         if (canChangeTurn)
@@ -300,7 +289,36 @@ public class Chessboard {
         lastSelectedCell = cell;
     }
 
-   private boolean checkWin(){
+    private void showAvailableMoves(Cell cell){
+        if (!isBeingCaptured) {
+            lastSelections.clear();
+
+
+            for (int moves[] : availableMoves) {
+                int X = moves[0];
+                int Y = moves[1];
+                //correct values inside the board
+                if (X >= 0 && Y >= 0 && X < 8 && Y < 8) {
+                    cells[X][Y].showAvailableMove(cell);
+                    lastSelections.add(new int[]{X, Y});
+                }
+            }
+        }
+    }
+    private void hideLastShownMoves(Cell cell){
+        if (availableMoves!=null){
+            for (  int moves[] : availableMoves) {
+                int X = moves[0];
+                int Y = moves[1];
+
+                if (X >= 0 && Y >= 0 && X < 8 && Y < 8) {
+                    cells[X][Y].hideAvailableMoves();
+                }
+            }
+            cell.availableMoves=new ArrayList<>();
+        }
+    }
+   private boolean checkMate(){
         //Change turn becuase chenkKingIsSafe need the cell to be the same type as turn
        changeTurn();
 
@@ -352,5 +370,78 @@ public class Chessboard {
         }
     }
 
+    public void moveCell(Cell cell){
+        if ((GameData.turn== WHITE && lastSelectedCell.pieceType < 6 && lastSelectedCell.pieceType != -1) || (GameData.turn == BLACK && lastSelectedCell.pieceType > 5)) {
+            isBeingCaptured = cell.movePiece(lastSelectedCell);
+            ArrayList<Integer> auxPositions = new ArrayList<>();
+
+            auxPositions.add(lastSelectedCell.posX);
+            auxPositions.add(lastSelectedCell.posY);
+            auxPositions.add(cell.posX);
+            auxPositions.add(cell.posY);
+
+            Log.d("ddasd",auxPositions.toString());
+            gameModel.setPositions(auxPositions);
+
+            //Just let to the client that is moving write to the server
+            String userInput = auxPositions.toString();
+            if(GameData.currentPlayer == GameData.turn &&  !GameData.isOffline){
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+
+                            out.write((userInput + "\n").getBytes());
+                            out.flush();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }).start();
+            }
+
+            //Check if the game has ended
+            checkWin(cell);
+
+            GameData.saveGameModel(gameModel , false);
+            canChangeTurn=true;
+
+        }
+    }
+
+    //first it checks if the king is checked with checkCheckMate,then check if its mate with checkMate()
+    private void checkWin(Cell cell){
+        if(cell.whiteKing.checkCheckMate() || cell.blackKing.checkCheckMate()){
+            if(checkMate()){
+                if(GameData.turn == GameData.BLACK){
+                    Toast.makeText(context, "Black wins", Toast.LENGTH_SHORT).show();
+                    gameModel.setWinner(GameData.BLACK);
+
+                    try {
+                        out.close();
+                        socket.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                }else if(GameData.turn == GameData.WHITE){
+                    Toast.makeText(context, "White wins", Toast.LENGTH_SHORT).show();
+                    gameModel.setWinner(GameData.WHITE);
+
+                    try {
+                        out.close();
+                        socket.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                }
+                GameData.saveGameModel(gameModel,true);
+                gameModel.setGAME_STATUS(GameData.FINISHED);
+                updateStats();
+                return;
+            }
+        }
+    }
 
 }

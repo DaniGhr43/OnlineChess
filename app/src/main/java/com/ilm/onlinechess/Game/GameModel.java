@@ -24,7 +24,6 @@ public class GameModel {
    private ArrayList<Integer> positions  ;
    private int GAME_STATUS ;
 
-
     public GameModel(){
         this.currentPlayer=0;
         this.gameId = -1;

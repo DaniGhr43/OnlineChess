@@ -65,8 +65,6 @@ public class LoginFragment extends Fragment{
                 }
 
                 createOnlineGame();
-                //NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_content_login_nav);
-                //navController.navigate(R.id.nav_game); // Reemplaza slideshowFragment con el ID correcto de tu fragmento en nav_graph.xml
             }
         });
 
@@ -106,10 +104,11 @@ public class LoginFragment extends Fragment{
         GameModel model = new GameModel();
         GameData.isOffline= true;
         model.setGameId(1234);
-        GameData.saveGameModel(model);
+        GameData.saveGameModel(model, false);
         model.setHostPlayer("LocalUser1");
         model.setGuestPlayer("LocalUser2");
-
+        model.setGuestRank("0");
+        model.setHostRank("0");
         Intent i = new Intent(getContext(),Game.class);
         startActivity(i);
     }
@@ -134,7 +133,7 @@ public class LoginFragment extends Fragment{
 
         model.setGuestPlayer("Waiting for player...");
         model.setGuestRank("0");
-        GameData.saveGameModel(model);
+        GameData.saveGameModel(model, true);
         gameModel = model;
 
         Intent i = new Intent(getContext(), Game.class);
@@ -157,6 +156,8 @@ public class LoginFragment extends Fragment{
 
                         if (model != null) {
 
+                            Log.d("join", String.valueOf(model.getHostRank()));
+
                             if(model.getGAME_STATUS() == GameData.CREATE){
                                 model.setGuestPlayer("Guest 2");
                                 model.setGAME_STATUS(GameData.JOIN);
@@ -170,14 +171,14 @@ public class LoginFragment extends Fragment{
                                 }
                                 //Update GameData.bitmap
                                 //Set that bitmap to the imageView
-                                GameData.saveGameModel(model);
+                                GameData.saveGameModel(model,true);
                                 gameModel = model;
 
 
                                 Intent i = new Intent(getContext(), Game.class);
                                 startActivity(i);
 
-                                // startGame();
+
                             }else{
                                 binding.gameID.setError("The game has already ended or started");
 

@@ -91,13 +91,13 @@
         android:id="@+id/textView3"
         android:layout_width="209dp"
         android:layout_height="43dp"
-        android:text="Sing in to acces your proffile and save your data"
+        android:text="Sing in to access your profile and save your data"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.484" />
+        app:layout_constraintVertical_bias="0.481" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

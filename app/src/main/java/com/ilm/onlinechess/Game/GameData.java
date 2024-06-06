@@ -35,46 +35,52 @@ public class GameData  {
     public static Bitmap hostAvatar ;
 
     private static FirebaseFirestore db = FirebaseFirestore.getInstance();
-    public static void saveGameModel(GameModel model){
-        _gameModel.postValue(model);
-        gameModel=_gameModel;
+    public static void saveGameModel(final GameModel model, boolean saveOnBD) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("saveGameModel", "saveGameModel");
 
-        if(!isOffline){
-            db.collection("games")
-                    .document(String.valueOf(model.gameId))
-                    .set(model);
-        }
+                _gameModel.postValue(model);
 
-
-
+                if (!isOffline && saveOnBD) {
+                    db.collection("games")
+                            .document(String.valueOf(model.gameId))
+                            .set(model);
+                }
+            }
+        }).start();
     }
 
 
-    public static void fetchGameModel(){
 
-        db.collection("games")
-                .document(String.valueOf(gameModel.getValue().gameId))
-                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                @Override
-                                public void onEvent(@Nullable DocumentSnapshot snapshot,
-                                                    @Nullable FirebaseFirestoreException e) {
+    public static void fetchGameModel() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                db.collection("games")
+                        .document(String.valueOf(gameModel.getValue().gameId))
+                        .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                            @Override
+                            public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                                @Nullable FirebaseFirestoreException e) {
 
-
-                                    GameModel model = snapshot.toObject(GameModel.class);
-                                    if (e != null) {
-                                        Log.w("fetchGameModel", "Listen failed.", e);
-                                        return;
-                                    }
-
-                                    if (snapshot != null && snapshot.exists()) {
-                                        Log.d("fetchGameModel", "Current data: " + snapshot.getData());
-                                        _gameModel.postValue(model);
-                                    } else {
-                                        Log.d("fetchGameModel", "Current data: null");
-                                    }
-
+                                if (e != null) {
+                                    Log.w("fetchGameModel", "Listen failed.", e);
+                                    return;
                                 }
-                            });
+
+                                if (snapshot != null && snapshot.exists()) {
+                                    Log.d("fetchGameModel", "Current data: " + snapshot.getData());
+                                    GameModel model = snapshot.toObject(GameModel.class);
+                                    _gameModel.postValue(model);
+                                } else {
+                                    Log.d("fetchGameModel", "Current data: null");
+                                }
+                            }
+                        });
+            }
+        }).start();
     }
 
 

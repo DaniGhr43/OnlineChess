@@ -829,35 +829,6 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
     public boolean isValidPosition(int posX, int posY) {
         return posX >= 0 && posX < 8 && posY >= 0 && posY < 8;
     }
-    public boolean isLegitMove( Cell king){
 
-        int cont = 0;
-        if(checkKingIsSafe(king)){
-            if((pieceType==EMPTY || pieceType > 5 ) && king.pieceType < 6){
-                cont++;
-
-            }
-            //WHITES. setImageBitmap will set a just dot
-            if((pieceType==EMPTY || pieceType < 6 ) && king.pieceType > 5 ){
-                cont++;
-            }
-            //WHITES. setImageBitmap will set a dot combined with the piece
-            if (pieceType > 5 && king.pieceType < 6 && pieceType!=EMPTY) {
-                cont++;
-
-            }
-            //BLACKS. setImageBitmap will set a dot combined with the piece
-            if ( pieceType < 6 && king.pieceType > 5 && pieceType!=EMPTY) {
-                cont++;
-            }
-
-
-        }
-        if(cont == 0){
-            return true;
-        }else
-            return false;
-
-    }
 
 }

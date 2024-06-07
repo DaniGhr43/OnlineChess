@@ -22,8 +22,8 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
     final int PAWN =5 , PAWN2 =11;
     final int EMPTY =-1 ;
     int pieceType;
-    Bitmap bitmap;
-    Bitmap bitmaps[];
+    public Bitmap bitmap;
+    public Bitmap bitmaps[];
     int posX,posY;
     boolean seleccionada;
     public boolean isShowingAvailableMove=false;
@@ -31,22 +31,18 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
     public int backgroudColor ;
     private final int WHITE=0;
     private final int BLACK=1;
-    Cell[][] chessboard;
+    public Chessboard chessboard;
     public ArrayList<int[]> availableMoves = new ArrayList<>();
     private ArrayList<int[]> checkMateMoves;
     public ArrayList< ArrayList<int[]> > availableEnemyMoves = new ArrayList<>();
 
-    private Context context;
-    public Cell whiteKing,blackKing;
-
-
     //posX and posY are invertied because view and inserted from top to bottom, no from left to right
-    public Cell(Context context, int posY, int posX, Bitmap[] bitmaps) {
-        super(context);
-        this.context=context;
+    public Cell(Chessboard chessboard, int posY, int posX, Bitmap[] bitmaps) {
+        super(chessboard.context);
         this.posX = posX;
         this.posY = posY;
         this.bitmaps = bitmaps;
+        this.chessboard = chessboard;
 
         if(posY == 0 && posX == 0) {
             pieceType = ROOK;
@@ -96,16 +92,16 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
 
 
 
+
+
     //To simulate the next move
     public Cell clone() {
-        Log.d("Clone", "Cloned");
         try {
             Cell clonedCell = (Cell) super.clone();
             clonedCell.pieceType = this.pieceType;
-            clonedCell.whiteKing = this.whiteKing;
-            clonedCell.blackKing = this.blackKing;
-            clonedCell.chessboard = this.chessboard;  // Añadir esta línea para asegurarse de que el tablero también se clona
-
+            clonedCell.posX = this.posX;
+            clonedCell.posY = this.posY;
+            clonedCell.chessboard = this.chessboard;
             return clonedCell;
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e); // Manejar la excepción apropiadamente
@@ -116,11 +112,6 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
     public void setSeleccionada(boolean seleccionada){
         this.seleccionada = seleccionada;
         Log.d("setSeleccionada", "setSeleccionada");
-
-        if(pieceType == KING)
-            whiteKing=this;
-        if(pieceType==KING2)
-            blackKing=this;
 
         if(seleccionada )
             setBackgroundColor(getResources().getColor(R.color.colorPrimary));
@@ -136,21 +127,9 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
     //Refresh the chessboard and the whiteKing and blackKing references
 
     //REVISAR QUE EL BLACKKING Y EL WHITE KING SON LO QUE DICEN SER
-    public void refreshChessboard(Cell[][] chessboard){
-        Log.d("refreshChessboard", "refreshChessboard");
-        this.chessboard = chessboard;
-        for(Cell[] cel : chessboard) {
-            for (Cell c : cel) {
-                if (c.pieceType == KING) {
-                    whiteKing = c;
-                }
-                if (c.pieceType == KING2) {
-                    blackKing = c;
-                }
-            }
-        }
 
-    }
+
+
 
     //refresh the value of the local chessboard variable
     //set the availables moves of the piece, if a piece of the other type is found the method stop adding available moves in that direction
@@ -323,7 +302,7 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
                     if (isOpponentPiece(pieceAtNewPos)) {
                         availableMoves.add(new int[]{newX, newY});
 
-                        if( (!ignoreKing && (chessboard[newX][newY].pieceType != KING || chessboard[newX][newY].pieceType != KING2)) )
+                        if( (!ignoreKing && (chessboard.cells[newX][newY].pieceType != KING || chessboard.cells[newX][newY].pieceType != KING2)) )
                             break;
                     } else {
                         availableMoves.add(new int[]{newX, newY});
@@ -348,13 +327,13 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
                     break;
 
                 Integer pieceAtNewPos = getPieceAt(newX, newY);
-               // if(chessboard[newX][newY].checkKingIsSafe(this)){
+
                     if (pieceAtNewPos == EMPTY) {
                         availableMoves.add(new int[]{newX, newY});
                     } else {
                         if (isOpponentPiece(pieceAtNewPos)) {
                             availableMoves.add(new int[]{newX, newY});
-                            if((!ignoreKing && (chessboard[newX][newY].pieceType != KING || chessboard[newX][newY].pieceType != KING2)) )
+                            if((!ignoreKing && (chessboard.cells[newX][newY].pieceType != KING || chessboard.cells[newX][newY].pieceType != KING2)) )
                                 break;
 
                         } else {
@@ -434,25 +413,15 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
                 {0, 0},{1, 0}, {-1, 0}, {0, 1}, {0, -1},
                 {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
         };
-
         for (int[] move : moves) {
-
             int newX = posX + move[0];
             int newY = posY + move[1];
 
-           //if (!isValidPosition(newX, newY)) {
-           //   continue;
-           // }
-           // Integer pieceAtNewPos = getPieceAt(newX, newY);
-           //if (pieceAtNewPos != EMPTY && !isOpponentPiece(pieceAtNewPos)) {
-           //     continue;//}
+               if(isValidPosition(newX, newY) ) {
+                   availableMoves.add(new int[]{newX, newY});
+                   Log.d("guarda", "guarda");
 
-            if (isValidPosition(newX,newY)) {
-                availableMoves.add(new int[]{newX, newY});
-                Log.d("guarda", "guarda");
-
-            }
-
+               }
         }
     }
 
@@ -467,7 +436,6 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
         if (getPieceAt(posX, posY + direction) == EMPTY ) {
             availableMoves.add(new int[]{posX, posY + direction});
             // Movimiento doble si está en la fila inicial
-
         }
         if (posY == startRow && getPieceAt(posX, posY + 2 * direction) == EMPTY) {
             if(isValidPosition(posX, posY + 2 * direction))
@@ -490,11 +458,11 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
 
 
 
-            if(isValidPosition(posX + 1, posY + direction) )
-                availableMoves.add(new int[]{posX + 1, posY + direction});
+        if(isValidPosition(posX + 1, posY + direction) )
+            availableMoves.add(new int[]{posX + 1, posY + direction});
 
-            if(isValidPosition(posX - 1, posY + direction))
-                availableMoves.add(new int[]{posX - 1, posY + direction});
+        if(isValidPosition(posX - 1, posY + direction))
+            availableMoves.add(new int[]{posX - 1, posY + direction});
 
     }
 
@@ -517,9 +485,7 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
                 if (direction[0] == 2 || direction[1] == 2) {
                     newX = posX + direction[0];
                     newY = posY + direction[1];
-
                 }
-
                 Integer pieceAtNewPos = getPieceAt(newX, newY);
 
                 if (pieceAtNewPos == EMPTY) {
@@ -533,8 +499,6 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
             }
         }
 
-
-
         return checkMateMoves;
     }
 
@@ -545,7 +509,7 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
     private Integer getPieceAt(int x, int y) {
         Log.d("getPieceAt", "getPieceAt");
         if(isValidPosition(x,y) ){
-            return chessboard[x][y].pieceType;
+            return chessboard.cells[x][y].pieceType;
         }else
             return EMPTY;
 
@@ -610,48 +574,9 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
     }
 
     //Show a dot in the cell if its empty or if the clickedCell can eat this cell
-    public void showAvailableMove(Cell clickedCell){
-        Log.d("showAvailableMove", "showAvailableMove");
-
-        Bitmap overlayBitmap = bitmaps[6]; // Bitmap to overlay when a cell is clicked(a dot)
 
 
 
-        //BLACKS. setImageBitmap will set a just dot
-        if(checkKingIsSafe(clickedCell)){
-            if((pieceType==EMPTY || pieceType > 5 ) && clickedCell.pieceType < 6){
-                setImageBitmap(bitmaps[6]);
-                isShowingAvailableMove = true;
-            }
-            //WHITES. setImageBitmap will set a just dot
-            if((pieceType==EMPTY || pieceType < 6 ) && clickedCell.pieceType > 5 ){
-                setImageBitmap(bitmaps[6]);
-                isShowingAvailableMove = true;
-            }
-            //WHITES. setImageBitmap will set a dot combined with the piece
-            if (pieceType > 5 && clickedCell.pieceType < 6 && pieceType!=EMPTY) {
-                Bitmap combinedBitmap = overlayBitmaps(bitmap, overlayBitmap);
-                setImageBitmap(combinedBitmap);
-                isShowingAvailableMove = true;
-            }
-            //BLACKS. setImageBitmap will set a dot combined with the piece
-            if ( pieceType < 6 && clickedCell.pieceType > 5 && pieceType!=EMPTY) {
-                Bitmap combinedBitmap = overlayBitmaps(bitmap, overlayBitmap);
-                setImageBitmap(combinedBitmap);
-                isShowingAvailableMove = true;
-            }
-        }
-
-    }
-
-    private Bitmap overlayBitmaps(Bitmap base, Bitmap overlay) {
-        Log.d("overlayBitmaps", "overlayBitmaps");
-        Bitmap combined = Bitmap.createBitmap(base.getWidth(), base.getHeight(), base.getConfig());
-        Canvas canvas = new Canvas(combined);
-        canvas.drawBitmap(base, 0, 0, null);
-        canvas.drawBitmap(overlay, 0, 0, null); // Ajusta la posición si es necesario
-        return combined;
-    }
     public void showBitmap(){
         Log.d("showBitmap", "showBitmap");
         isShowingAvailableMove = false;
@@ -700,70 +625,58 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
 
 
 
+    //Check that lastSelectedCell can move to this positions
     public boolean checkKingIsSafe(Cell lastSelectedCell) {
         Log.d("checkKingIsSafe", "checkKingIsSafe");
-        if(isOpponentPiece(lastSelectedCell.pieceType) || pieceType==EMPTY){
-            // Crear copias de las celdas
-            Cell currentCellCopy = this.clone();
+        if (isOpponentPiece(lastSelectedCell.pieceType) || pieceType == EMPTY) {
+            // Crear una copia del tablero
+            Chessboard clonedChessboard = this.chessboard.clone();
 
-            Cell lastSelectedCellCopy = lastSelectedCell.clone();
-            Cell[][] clonedChessboard = new Cell[8][8];
-            for (int i = 0; i < 8; i++) {
-                for (int j = 0; j < 8; j++) {
-                    clonedChessboard[i][j] = chessboard[i][j].clone();
-                }
-            }
-            currentCellCopy.whiteKing = whiteKing.clone();
-            lastSelectedCellCopy.whiteKing = whiteKing.clone();
-            currentCellCopy.blackKing = blackKing.clone();
-            lastSelectedCellCopy.blackKing = blackKing.clone();
-            currentCellCopy.refreshChessboard(clonedChessboard);
-            lastSelectedCellCopy.refreshChessboard(clonedChessboard);
-          //  //currentCellCopy.movePiece(lastSelectedCellCopy);
+            // Crear copias de las celdas relevantes en el tablero clonado
+            Cell currentCellCopy = clonedChessboard.cells[this.posX][this.posY];
+            Cell lastSelectedCellCopy = clonedChessboard.cells[lastSelectedCell.posX][lastSelectedCell.posY];
 
-
-            Log.d("MAR",  "PiecaType current:" + currentCellCopy.pieceType);
-            Log.d("MAR2", "PiecaType last:" + lastSelectedCellCopy.pieceType);
-            int auxPiecetype = currentCellCopy.pieceType;
-            currentCellCopy.pieceType=lastSelectedCellCopy.pieceType;
+            // Simular el movimiento
+            int auxPieceType = currentCellCopy.pieceType;
+            currentCellCopy.pieceType = lastSelectedCellCopy.pieceType;
             lastSelectedCellCopy.pieceType = EMPTY;
 
-
+            // Actualizar el estado de selección
             currentCellCopy.setSeleccionada(false);
 
             Log.d("MAR", currentCellCopy.posX + " posY " + currentCellCopy.posY);
             Log.d("MAR2", lastSelectedCellCopy.posX + " posY " + lastSelectedCellCopy.posY);
 
-            //You have to refresh the value in the chessboard of the changed piece, and refresh the chessboard of the kings with that new chessboard
-            currentCellCopy.chessboard[currentCellCopy.posX][currentCellCopy.posY] = currentCellCopy;
-            lastSelectedCellCopy.chessboard[lastSelectedCellCopy.posX][lastSelectedCellCopy.posY] = lastSelectedCellCopy;
-            currentCellCopy.blackKing.refreshChessboard(currentCellCopy.chessboard);
-            currentCellCopy.whiteKing.refreshChessboard(currentCellCopy.chessboard);
-            lastSelectedCellCopy.whiteKing.refreshChessboard(lastSelectedCellCopy.chessboard);
-            lastSelectedCellCopy.blackKing.refreshChessboard(lastSelectedCellCopy.chessboard);
+            // Actualizar el valor en el tablero clonado de las piezas cambiadas
+            if(currentCellCopy.pieceType == KING2 )
+                clonedChessboard.blackKing=currentCellCopy;
 
+            clonedChessboard.cells[currentCellCopy.posX][currentCellCopy.posY] = currentCellCopy;
+            clonedChessboard.cells[lastSelectedCellCopy.posX][lastSelectedCellCopy.posY] = lastSelectedCellCopy;
 
-
-
-            if(GameData.turn == BLACK) {
-                if (currentCellCopy.blackKing.checkCheckMate()) {
+            // Verificar si el rey está en jaque mate después del movimiento simulado
+            if (GameData.turn == BLACK) {
+                Log.d("dddds",clonedChessboard.blackKing.posX + " , "+clonedChessboard.blackKing.posY );
+                if (clonedChessboard.blackKing.checkCheckMate()) {
                     return false;
                 }
-            }else if(GameData.turn == WHITE) {
-                if (currentCellCopy.whiteKing.checkCheckMate()) {
+            } else if (GameData.turn == WHITE) {
+                Log.d("dddds",clonedChessboard.blackKing.posX + " , "+clonedChessboard.blackKing.posY );
+
+                if (clonedChessboard.whiteKing.checkCheckMate()) {
                     return false;
                 }
             }
 
-            /*&& currentCellCopy.isOpponentPiece(auxPiecetype) */
-            //Log.d("REY22", "posX: " +currentCellCopy.blackKing.posX + "posY: " + currentCellCopy.blackKing.posY);
-            lastSelectedCellCopy.pieceType= currentCellCopy.pieceType;
-            currentCellCopy.pieceType=auxPiecetype;
+            // Restaurar el estado original de las piezas
+            lastSelectedCellCopy.pieceType = currentCellCopy.pieceType;
+            currentCellCopy.pieceType = auxPieceType;
 
             return true;
         }
         return false;
     }
+
 
 
 
@@ -812,7 +725,7 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView implement
 
             //IF THE POSITION EXISTS
             if (isValidPosition(X, Y) ) {
-                availableEnemyMoves.add(chessboard[X][Y].setEnemyMoves(true));
+                availableEnemyMoves.add(chessboard.cells[X][Y].setEnemyMoves(true));
                 for (ArrayList<int[]> moves3 : availableEnemyMoves) {
                     for(int [] moves4 :moves3){
                         Log.d("ESOE", Arrays.toString(moves4));

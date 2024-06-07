@@ -4,6 +4,7 @@ package com.ilm.onlinechess.Game;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
@@ -24,12 +25,12 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class Chessboard {
+public class Chessboard implements Cloneable{
 
 
     public GridLayout grid;
     public Context context;
-    public Cell[][] cells ;
+    public Cell[][]  cells ;
     public ArrayList<int[]> availableMoves;
 
     // private int[] lastSelection;
@@ -38,14 +39,15 @@ public class Chessboard {
 
     private final int WHITE=0;
     private final int BLACK=1;
-    private Cell whiteKing,blackKing;
+    public  Cell whiteKing,blackKing;
     private int[][] matriz = new int[8][8];
     FirebaseFirestore db ;
     private GameModel gameModel = new GameModel();
     private LifecycleOwner lifecycleOwner;
     private int turnCont;
-    private Socket socket;
-    private OutputStream out;
+    public Socket socket;
+    public OutputStream out;
+    public BufferedReader in;
     private int gameId;
     private boolean isBeingCaptured = false;
     private boolean canChangeTurn = false;
@@ -79,12 +81,16 @@ public class Chessboard {
         }
 
     }
+
+    public Chessboard(){
+
+    }
     public void joinGame() {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 String serverAddress = "13.36.252.117"; // Dirección IP o nombre de host del servidor
-                int serverPort = 100; // Puerto del servidor
+                int serverPort = 8444; // Puerto del servidor
 
                 try {
                     socket = new Socket(serverAddress, serverPort);
@@ -103,7 +109,7 @@ public class Chessboard {
                     new Thread(() -> {
                         String serverResponse;
                         try {
-                            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
                             while ((serverResponse = in.readLine()) != null) {
                                 System.out.println(serverResponse);
@@ -111,9 +117,35 @@ public class Chessboard {
                                 String[] serverResponseArray = serverResponseStr.split(",");
                                 ArrayList<Integer> positions = new ArrayList<>();
 
+                                //If the server send us exit message, end the game
+                                if(serverResponse.equals("EXIT")){
+                                    if(GameData.currentPlayer==GameData.BLACK){
+                                        gameModel.setWinner(GameData.BLACK);
+                                        try {
+                                            out.close();
+                                            socket.close();
+                                        } catch (IOException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    }else if(GameData.currentPlayer==GameData.WHITE){
+                                        gameModel.setWinner(GameData.WHITE);
+                                        try {
+                                            out.close();
+                                            socket.close();
+                                        } catch (IOException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    }
+                                    gameModel.setGAME_STATUS(GameData.FINISHED);
+                                    GameData.saveGameModel(gameModel,true);
+                                    break;
+                                }
+
+                                //Add the positions of the move done by the other player
                                 for (String pos : serverResponseArray) {
                                     positions.add(Integer.parseInt(pos));
                                 }
+
                                 gameModel.setPositions(positions);
                                 GameData.saveGameModel(gameModel,false);
                             }
@@ -135,7 +167,25 @@ public class Chessboard {
         }).start();
     }
 
-
+    public Chessboard clone() {
+        try {
+            Chessboard clonedBoard = (Chessboard) super.clone();
+            clonedBoard.cells = new Cell[8][8];
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    clonedBoard.cells[i][j] = this.cells[i][j].clone();
+                    clonedBoard.cells[i][j].chessboard = clonedBoard;
+                }
+            }
+            clonedBoard.whiteKing = this.whiteKing.clone();
+            clonedBoard.whiteKing.chessboard = clonedBoard;
+            clonedBoard.blackKing = this.blackKing.clone();
+            clonedBoard.blackKing.chessboard = clonedBoard;
+            return clonedBoard;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e); // Manejar la excepción apropiadamente
+        }
+    }
     public void createCells(){
 
 
@@ -165,7 +215,7 @@ public class Chessboard {
         for (int y = 0; y < 8; y ++) {
             for (int x = 0; x < 8; x++) {
 
-                Cell cell = new Cell(context, y , x, bitmaps);
+                Cell cell = new Cell(this, y , x, bitmaps);
                 GridLayout.LayoutParams params = new GridLayout.LayoutParams();
                 params.width = 0;
                 params.height =0;
@@ -187,6 +237,12 @@ public class Chessboard {
                 final int  YY= y;
 
 
+                if (cell.pieceType == cell.KING) {
+                    whiteKing = cell;
+                }
+                if (cell.pieceType == cell.KING2) {
+                    blackKing = cell;
+                }
                 cell.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -194,11 +250,7 @@ public class Chessboard {
                             Log.d("dd", String.valueOf(GameData.gameModel.getValue().getGAME_STATUS()));
 
                             if(GameData.gameModel.getValue().getGAME_STATUS()==GameData.STARTED ){
-                                for(Cell[] cel : cells){
-                                    for(Cell c : cel){
-                                        c.refreshChessboard(cells);
-                                    }
-                                }
+
 
                                 if(GameData.currentPlayer == GameData.turn ){
                                     click(cell);
@@ -216,6 +268,9 @@ public class Chessboard {
 
             }
         }
+
+
+
     }
 
 
@@ -227,6 +282,9 @@ public class Chessboard {
 
     }
 
+
+
+
     private boolean mate = true;
     public void click(Cell cell) {
          isBeingCaptured = false;
@@ -236,12 +294,6 @@ public class Chessboard {
         turnCont++;
 
         Log.d("CLOCK", String.valueOf(GameData.turn));
-
-        for (Cell[] cel : cells) {
-            for (Cell c : cel) {
-                c.refreshChessboard(cells);
-            }
-        }
 
 
         //Change the state of selected in the clicked and last clicked cell if it can be changed
@@ -274,7 +326,7 @@ public class Chessboard {
             }
 
             //show the availables moves of the cell. this is only executed if this cell is not being captured
-            showAvailableMoves(cell);
+            showAllAvailableMoves(cell);
 
        //if the cell is being unselected, hide all the availables moves that are being showed
         } else {
@@ -286,25 +338,69 @@ public class Chessboard {
 
 
 
+        cells[cell.posX][cell.posY] = cell;
+
         lastSelectedCell = cell;
     }
 
-    private void showAvailableMoves(Cell cell){
+    private void showAllAvailableMoves(Cell cell){
         if (!isBeingCaptured) {
             lastSelections.clear();
-
 
             for (int moves[] : availableMoves) {
                 int X = moves[0];
                 int Y = moves[1];
                 //correct values inside the board
                 if (X >= 0 && Y >= 0 && X < 8 && Y < 8) {
-                    cells[X][Y].showAvailableMove(cell);
+                    showSingleAvailableMove(cells[X][Y],cell);
                     lastSelections.add(new int[]{X, Y});
                 }
             }
         }
     }
+    public void showSingleAvailableMove(Cell checkedCell, Cell clickedCell){
+        Log.d("showAvailableMove", "showAvailableMove");
+
+        Bitmap overlayBitmap = checkedCell.bitmaps[6]; // Bitmap to overlay when a cell is clicked(a dot)
+
+        //BLACKS. setImageBitmap will set a just dot
+        if(checkedCell.checkKingIsSafe(clickedCell)){
+            if((checkedCell.pieceType==checkedCell.EMPTY || checkedCell.pieceType > 5 ) && clickedCell.pieceType < 6){
+                checkedCell.setImageBitmap(checkedCell.bitmaps[6]);
+                checkedCell.isShowingAvailableMove = true;
+            }
+            //WHITES. setImageBitmap will set a just dot
+            if((checkedCell.pieceType==checkedCell.EMPTY || checkedCell.pieceType < 6 ) && clickedCell.pieceType > 5 ){
+                checkedCell.setImageBitmap(checkedCell.bitmaps[6]);
+                checkedCell.isShowingAvailableMove = true;
+            }
+            //WHITES. setImageBitmap will set a dot combined with the piece
+            if (checkedCell.pieceType > 5 && clickedCell.pieceType < 6 && checkedCell.pieceType!=checkedCell.EMPTY) {
+                Bitmap combinedBitmap = overlayBitmaps(checkedCell.bitmap, overlayBitmap);
+                checkedCell.setImageBitmap(combinedBitmap);
+                checkedCell.isShowingAvailableMove = true;
+            }
+            //BLACKS. setImageBitmap will set a dot combined with the piece
+            if ( checkedCell.pieceType < 6 && clickedCell.pieceType > 5 && checkedCell.pieceType!=checkedCell.EMPTY) {
+                Bitmap combinedBitmap = overlayBitmaps(checkedCell.bitmap, overlayBitmap);
+                checkedCell.setImageBitmap(combinedBitmap);
+                checkedCell.isShowingAvailableMove = true;
+            }
+        }
+
+
+    }
+
+    private Bitmap overlayBitmaps(Bitmap base, Bitmap overlay) {
+        Log.d("overlayBitmaps", "overlayBitmaps");
+        Bitmap combined = Bitmap.createBitmap(base.getWidth(), base.getHeight(), base.getConfig());
+        Canvas canvas = new Canvas(combined);
+        canvas.drawBitmap(base, 0, 0, null);
+        canvas.drawBitmap(overlay, 0, 0, null); // Ajusta la posición si es necesario
+        return combined;
+    }
+
+
     private void hideLastShownMoves(Cell cell){
         if (availableMoves!=null){
             for (  int moves[] : availableMoves) {
@@ -352,23 +448,7 @@ public class Chessboard {
         return true;
     }
 
-    public void updateStats(){
 
-        if(GameData.currentPlayer == gameModel.getWinner() && GameData.isLoged){
-            User user =  GameData._user.getValue();
-            user.setRank(user.getRank()+20);
-            user.setLevel(user.getLevel()+0.25);
-
-            GameData.updateUser(user);
-        }else if(GameData.isLoged){
-            User user =  GameData._user.getValue();
-            if(user.getRank()>0)
-                user.setRank(user.getRank()-20);
-            user.setLevel(user.getLevel()+0.10);
-
-            GameData.updateUser(user);
-        }
-    }
 
     public void moveCell(Cell cell){
         if ((GameData.turn== WHITE && lastSelectedCell.pieceType < 6 && lastSelectedCell.pieceType != -1) || (GameData.turn == BLACK && lastSelectedCell.pieceType > 5)) {
@@ -379,6 +459,11 @@ public class Chessboard {
             auxPositions.add(lastSelectedCell.posY);
             auxPositions.add(cell.posX);
             auxPositions.add(cell.posY);
+
+            if(cell.pieceType==cell.KING)
+                whiteKing = cell;
+            if(cell.pieceType==cell.KING2)
+                blackKing = cell;
 
             Log.d("ddasd",auxPositions.toString());
             gameModel.setPositions(auxPositions);
@@ -394,7 +479,7 @@ public class Chessboard {
                             out.write((userInput + "\n").getBytes());
                             out.flush();
                         } catch (IOException e) {
-                            throw new RuntimeException(e);
+                            e.printStackTrace();
                         }
                     }
                 }).start();
@@ -411,34 +496,37 @@ public class Chessboard {
 
     //first it checks if the king is checked with checkCheckMate,then check if its mate with checkMate()
     private void checkWin(Cell cell){
-        if(cell.whiteKing.checkCheckMate() || cell.blackKing.checkCheckMate()){
+        if(whiteKing.checkCheckMate() || blackKing.checkCheckMate()){
             if(checkMate()){
                 if(GameData.turn == GameData.BLACK){
-                    Toast.makeText(context, "Black wins", Toast.LENGTH_SHORT).show();
                     gameModel.setWinner(GameData.BLACK);
 
-                    try {
-                        out.close();
-                        socket.close();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    if(!GameData.isOffline){
+                        try {
+                            out.close();
+                            socket.close();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
+
 
                 }else if(GameData.turn == GameData.WHITE){
                     Toast.makeText(context, "White wins", Toast.LENGTH_SHORT).show();
                     gameModel.setWinner(GameData.WHITE);
-
-                    try {
-                        out.close();
-                        socket.close();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                    if(!GameData.isOffline) {
+                        try {
+                            out.close();
+                            socket.close();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
 
                 }
                 GameData.saveGameModel(gameModel,true);
                 gameModel.setGAME_STATUS(GameData.FINISHED);
-                updateStats();
+                //updateStats();
                 return;
             }
         }

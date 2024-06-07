@@ -26,9 +26,13 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.firebase.firestore.DocumentReference;
 import com.ilm.onlinechess.LoginNav;
 import com.ilm.onlinechess.R;
+import com.ilm.onlinechess.User;
 import com.ilm.onlinechess.databinding.ActivityGameBinding;
+
+import java.io.IOException;
 
 public class Game extends AppCompatActivity  {
 
@@ -39,6 +43,8 @@ public class Game extends AppCompatActivity  {
     private Button btnExit, btnReturn;
     private boolean clocksStarted = false;
     private Dialog dialog;
+    private boolean statsUpdated = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,9 +90,22 @@ public class Game extends AppCompatActivity  {
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
 
-                                GameData.gameModel=  new MutableLiveData<>();
-                                GameData.turn = 0;
+                                //if the game is online update stats
+                                if(!GameData.isOffline){
+                                    try {
+                                        board.out.close();
+                                        board.socket.close();
+                                        board.in.close();
+                                        //If a player exits when the game is started update his stats
 
+                                    } catch (IOException e) {
+                                        throw new RuntimeException(e);
+                                    }
+                                }
+
+
+                                gameModel=  new GameModel();
+                                GameData.turn = 0;
                                 finish();
                             }
                         })
@@ -208,12 +227,41 @@ public class Game extends AppCompatActivity  {
                     winner.setText("Black");
 
                 GameData.turn=GameData.WHITE;
+
+                if(!statsUpdated){
+                    //Delete the doc game in the bd in the client that is loosing, because is the last one to use the doc
+
+                    DocumentReference docRef = GameData.db.collection("games").document(String.valueOf(gameModel.gameId));
+                    docRef.delete();
+
+
+                    updateStats();
+                    statsUpdated=true;
+                }
+
                 dialog.show();
+
             }
         }
     }
 
+    public void updateStats(){
 
+        if(GameData.currentPlayer == gameModel.getWinner() && GameData.isLoged){
+            User user =  GameData._user.getValue();
+            user.setRank(user.getRank()+20);
+            user.setLevel(user.getLevel()+0.25);
+
+            GameData.updateUser(user);
+        }else if(GameData.isLoged){
+            User user =  GameData._user.getValue();
+            if(user.getRank()>0)
+                user.setRank(user.getRank()-20);
+            user.setLevel(user.getLevel()+0.10);
+
+            GameData.updateUser(user);
+        }
+    }
 
     public void startGame(){
         updateUI();

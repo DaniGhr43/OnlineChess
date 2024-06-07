@@ -34,7 +34,7 @@ public class GameData  {
     public static Bitmap guestAvatar;
     public static Bitmap hostAvatar ;
 
-    private static FirebaseFirestore db = FirebaseFirestore.getInstance();
+    public static FirebaseFirestore db = FirebaseFirestore.getInstance();
     public static void saveGameModel(final GameModel model, boolean saveOnBD) {
         new Thread(new Runnable() {
             @Override
@@ -54,6 +54,7 @@ public class GameData  {
 
 
 
+    //To update in realtime the gameModel with the data of firestore colecction
     public static void fetchGameModel() {
         new Thread(new Runnable() {
             @Override
@@ -86,13 +87,22 @@ public class GameData  {
 
     public static void updateUser(User user){
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        _user.postValue(user);
+                _user.postValue(user);
 
-        db.collection("users")
-                .document(String.valueOf(user.getEmail()))
-                .set(user);
+                db.collection("users")
+                                .
+
+                        document(String.valueOf(user.getEmail()))
+                                .
+
+                        set(user);
+            }
+        }).start();
     }
 
 

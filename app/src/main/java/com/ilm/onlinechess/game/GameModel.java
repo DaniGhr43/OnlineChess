@@ -1,13 +1,6 @@
-package com.ilm.onlinechess.Game;
-
-import androidx.lifecycle.MutableLiveData;
-
-import org.checkerframework.framework.qual.DefaultQualifier;
+package com.ilm.onlinechess.game;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
 
 public class GameModel {
     public  int gameId;

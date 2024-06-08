@@ -4,24 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:backgroundTint="@color/background">
+    android:backgroundTint="@color/backgroundSecund">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="250dp">
+        android:layout_height="200dp">
 
         <TextView
-            android:id="@+id/textView6"
+            android:id="@+id/winner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="TextView"
+            android:layout_marginEnd="4dp"
+            android:text="White"
+            android:textSize="30sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/textView5"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView5"
-            app:layout_constraintVertical_bias="0.226" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.206" />
 
         <TextView
             android:id="@+id/textView5"
@@ -31,54 +33,42 @@
             android:textSize="30sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.183"
-            app:layout_constraintStart_toEndOf="@+id/winner"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.056" />
-
-        <TextView
-            android:id="@+id/winner"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:fontFamily="@font/montserratmedium"
-            android:text="TextView"
-            android:textSize="30sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.208"
+            app:layout_constraintHorizontal_bias="0.702"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.057" />
+            app:layout_constraintVertical_bias="0.206" />
 
         <Button
             android:id="@+id/btnExit"
-            android:layout_width="140dp"
+            android:layout_width="100dp"
             android:layout_height="60dp"
+            android:layout_margin="20dp"
+            android:backgroundTint="@color/colorPrimary"
             android:text="Exit"
+            android:textColor="@color/black"
+            app:cornerRadius="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="0.092"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.863"
-            app:cornerRadius="8dp"
-            android:backgroundTint="@color/colorPrimary"
-            />
+            app:layout_constraintVertical_bias="0.885" />
 
         <Button
-
             android:id="@+id/btnReturn"
-            android:layout_width="140dp"
+            android:layout_width="100dp"
             android:layout_height="60dp"
-            android:text="Return to menu"
+            android:layout_margin="20dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:text="Return to lobby"
+            android:textColor="@color/black"
+            app:cornerRadius="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.574"
+            app:layout_constraintHorizontal_bias="0.439"
             app:layout_constraintStart_toEndOf="@+id/btnExit"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.865"
-            app:cornerRadius="8dp"
-            android:backgroundTint="@color/colorPrimary"/>
+            app:layout_constraintVertical_bias="0.885" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

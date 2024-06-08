@@ -1,4 +1,4 @@
-package com.ilm.onlinechess.ui.profile;
+package com.ilm.onlinechess.nav_ui.profile;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.ilm.onlinechess.Game.GameData;
+import com.ilm.onlinechess.game.GameData;
 import com.ilm.onlinechess.User;
 import com.ilm.onlinechess.databinding.FragmentProfileBinding;
 

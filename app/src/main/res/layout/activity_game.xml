@@ -72,7 +72,7 @@
                 app:layout_constraintStart_toStartOf="parent">
 
                 <TextView
-                    android:id="@+id/gameHost"
+                    android:id="@+id/gameGuest"
                     android:layout_width="136dp"
                     android:layout_height="20dp"
                     android:text="LocalUser1"
@@ -84,18 +84,18 @@
                     app:layout_constraintVertical_bias="0.962" />
 
                 <TextView
-                    android:id="@+id/hostRank"
+                    android:id="@+id/guestRank"
                     android:layout_width="140dp"
                     android:layout_height="20dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.865"
+                    app:layout_constraintHorizontal_bias="0.974"
                     app:layout_constraintStart_toEndOf="@+id/gameHost"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.962" />
+                    app:layout_constraintVertical_bias="0.964" />
 
                 <ImageView
-                    android:id="@+id/avatarHost"
+                    android:id="@+id/avatarGuest"
 
                     android:layout_width="72dp"
                     android:layout_height="72dp"
@@ -166,7 +166,7 @@
                 app:layout_constraintVertical_bias="0.809" />
 
             <TextView
-                android:id="@+id/gameGuest"
+                android:id="@+id/gameHost"
                 android:layout_width="139dp"
                 android:layout_height="21dp"
                 android:text="LocalUser 2"
@@ -178,7 +178,7 @@
                 app:layout_constraintVertical_bias="0.062" />
 
             <TextView
-                android:id="@+id/guestRank"
+                android:id="@+id/hostRank"
                 android:layout_width="152dp"
                 android:layout_height="21dp"
                 android:text=" "
@@ -190,7 +190,7 @@
                 app:layout_constraintVertical_bias="0.062" />
 
             <ImageView
-                android:id="@+id/avatarGuest"
+                android:id="@+id/avatarHost"
                 android:layout_width="72dp"
                 android:layout_height="72dp"
                 android:layout_marginBottom="16dp"

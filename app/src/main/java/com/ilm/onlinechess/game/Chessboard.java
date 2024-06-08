@@ -1,4 +1,4 @@
-package com.ilm.onlinechess.Game;
+package com.ilm.onlinechess.game;
 
 
 import android.content.Context;
@@ -16,9 +16,6 @@ import androidx.lifecycle.Observer;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.ilm.onlinechess.R;
-import com.ilm.onlinechess.User;
-
-import org.checkerframework.checker.units.qual.A;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -97,26 +94,26 @@ public class Chessboard {
     }
     private Map<String, Integer> createInitialPositions() {
         Map<String, Integer> positions = new HashMap<>();
-        positions.put("0,0", ROOK);
-        positions.put("0,1", KNIGHT);
-        positions.put("0,2", BISHOP);
-        positions.put("0,3", QUEEN);
-        positions.put("0,4", KING);
-        positions.put("0,5", BISHOP);
-        positions.put("0,6", KNIGHT);
-        positions.put("0,7", ROOK);
+        positions.put("0,0", ROOK2);
+        positions.put("0,1", KNIGHT2);
+        positions.put("0,2", BISHOP2);
+        positions.put("0,3", QUEEN2);
+        positions.put("0,4", KING2);
+        positions.put("0,5", BISHOP2);
+        positions.put("0,6", KNIGHT2);
+        positions.put("0,7", ROOK2);
         for (int i = 0; i < 8; i++) {
-            positions.put("1," + i, PAWN);
-            positions.put("6," + i, PAWN2);
+            positions.put("1," + i, PAWN2);
+            positions.put("6," + i, PAWN);
         }
-        positions.put("7,0", ROOK2);
-        positions.put("7,1", KNIGHT2);
-        positions.put("7,2", BISHOP2);
-        positions.put("7,3", QUEEN2);
-        positions.put("7,4", KING2);
-        positions.put("7,5", BISHOP2);
-        positions.put("7,6", KNIGHT2);
-        positions.put("7,7", ROOK2);
+        positions.put("7,0", ROOK);
+        positions.put("7,1", KNIGHT);
+        positions.put("7,2", BISHOP);
+        positions.put("7,3", QUEEN);
+        positions.put("7,4", KING);
+        positions.put("7,5", BISHOP);
+        positions.put("7,6", KNIGHT);
+        positions.put("7,7", ROOK);
         return positions;
     }
     public Chessboard(){
@@ -481,10 +478,6 @@ public class Chessboard {
 
             gameModel.setPositions(auxPositions);
 
-
-
-
-
             //Just let to the client that is moving write to the server
             String userInput = auxPositions.toString();
             if(GameData.currentPlayer == GameData.turn &&  !GameData.isOffline){
@@ -503,7 +496,7 @@ public class Chessboard {
             }
 
             //Check if the game has ended
-            checkWin(cell);
+            checkWin();
 
             GameData.saveGameModel(gameModel , false);
             canChangeTurn=true;
@@ -512,7 +505,7 @@ public class Chessboard {
     }
 
     //first it checks if the king is checked with checkCheckMate,then check if its mate with checkMate()
-    private void checkWin(Cell cell){
+    private void checkWin(){
         if(whiteKing.checkCheckMate() || blackKing.checkCheckMate()){
             if(checkMate()){
                 if(GameData.turn == GameData.BLACK){

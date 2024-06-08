@@ -1,4 +1,4 @@
-package com.ilm.onlinechess.Game;
+package com.ilm.onlinechess.game;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.OnBackPressedDispatcher;
@@ -10,13 +10,11 @@ import androidx.lifecycle.Observer;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -27,7 +25,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.firebase.firestore.DocumentReference;
-import com.ilm.onlinechess.GameNav;
 import com.ilm.onlinechess.R;
 import com.ilm.onlinechess.User;
 import com.ilm.onlinechess.databinding.ActivityGameBinding;

@@ -1,18 +1,12 @@
-package com.ilm.onlinechess.Game;
+package com.ilm.onlinechess.game;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.Log;
-import android.view.View;
 
 import com.ilm.onlinechess.R;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class Cell extends androidx.appcompat.widget.AppCompatImageView  {
@@ -308,31 +302,13 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView  {
         }
     }
 
-    //set the moves of the king and sets check to true if needed
-    private void addCheckedKingMoves() {
-        Log.d("addCheckedKingMoves", "addCheckedKingMoves");
 
-        int[][] moves = {
-                {0, 0},{1, 0}, {-1, 0}, {0, 1}, {0, -1},
-                {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
-        };
-        for (int[] move : moves) {
-            int newX = posX + move[0];
-            int newY = posY + move[1];
-
-               if(isValidPosition(newX, newY) ) {
-                   availableMoves.add(new int[]{newX, newY});
-                   Log.d("guarda", "guarda");
-
-               }
-        }
-    }
 
 
     private void addPawnMoves( boolean isWhite) {
         Log.d("addPawnMoves", "addPawnMoves");
-        int direction = isWhite ? 1 : -1;
-        int startRow = isWhite ? 1 : 6;
+        int direction = isWhite ? -1 : 1;
+        int startRow = isWhite ? 6 : 1;
 
 
         // Movimiento hacia adelante
@@ -356,8 +332,8 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView  {
 
     private void addPawnMoves2( boolean isWhite) {
         Log.d("addPawnMoves", "addPawnMoves");
-        int direction = isWhite ? 1 : -1;
-        int startRow = isWhite ? 1 : 6;
+        int direction = isWhite ?-1 : 1;
+
 
 
         if(isValidPosition(posX + 1, posY + direction) )
@@ -522,9 +498,9 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView  {
         lastSelectedCell.pieceType = EMPTY;
 
         //if a pawn reach end line
-        if(pieceType==PAWN && posY==7)
+        if(pieceType==PAWN && posY==0)
             pieceType=QUEEN;
-        if(pieceType==PAWN2 && posY==0)
+        if(pieceType==PAWN2 && posY==7)
             pieceType=QUEEN2;
 
         showBitmap();
@@ -601,20 +577,21 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView  {
     public boolean checkCheckMate(){
         Log.d("checkCheckMate", "checkCheckMate");
 
-        boolean check = false;
+
 
         setAvailableEnemyMoves();
+
 
         for (ArrayList<int[]> arrays : availableEnemyMoves ) {
             for (int[] enemyMoves : arrays) {
                 //But also an enemy
                 if ((posX == enemyMoves[0] && posY == enemyMoves[1])   )
-                    check = true;
+                    return true;
 
             }
         }
 
-        return check;
+        return false;
 
     }
 

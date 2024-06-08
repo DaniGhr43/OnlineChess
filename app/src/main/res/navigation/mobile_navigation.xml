@@ -8,12 +8,12 @@
 
     <fragment
         android:id="@+id/nav_profile"
-        android:name="com.ilm.onlinechess.ui.profile.ProfileFragment"
+        android:name="com.ilm.onlinechess.nav_ui.profile.ProfileFragment"
         android:label="Profile"
         tools:layout="@layout/fragment_profile" />
     <fragment
         android:id="@+id/nav_lobby"
-        android:name="com.ilm.onlinechess.ui.lobby.LobbyFragment"
+        android:name="com.ilm.onlinechess.nav_ui.lobby.LobbyFragment"
         android:label="Play"
         tools:layout="@layout/fragment_lobby" />
 

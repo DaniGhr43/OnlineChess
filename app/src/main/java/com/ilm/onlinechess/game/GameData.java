@@ -1,6 +1,5 @@
-package com.ilm.onlinechess.Game;
+package com.ilm.onlinechess.game;
 
-import android.graphics.Bitmap;
 import android.util.Log;
 
 import androidx.annotation.Nullable;

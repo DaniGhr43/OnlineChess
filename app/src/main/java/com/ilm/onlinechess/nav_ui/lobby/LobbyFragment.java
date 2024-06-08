@@ -1,4 +1,4 @@
-package com.ilm.onlinechess.ui.lobby;
+package com.ilm.onlinechess.nav_ui.lobby;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,9 +22,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.ilm.onlinechess.Game.Game;
-import com.ilm.onlinechess.Game.GameData;
-import com.ilm.onlinechess.Game.GameModel;
+import com.ilm.onlinechess.game.Game;
+import com.ilm.onlinechess.game.GameData;
+import com.ilm.onlinechess.game.GameModel;
 
 import com.ilm.onlinechess.R;
 import com.ilm.onlinechess.databinding.FragmentLobbyBinding;

@@ -28,7 +28,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.ilm.onlinechess.Game.GameData;
+import com.ilm.onlinechess.game.GameData;
 import com.ilm.onlinechess.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {

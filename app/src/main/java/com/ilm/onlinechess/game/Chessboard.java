@@ -258,20 +258,20 @@ public class Chessboard {
                     blackKing = cell;
                 }
                 cell.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Log.d("CLIICK", String.valueOf(GameData.turn));
-                            Log.d("CLIICK3", String.valueOf(GameData.currentPlayer));
-                            Log.d("CLIICK2", String.valueOf(GameData.gameModel.getValue().getGAME_STATUS()));
+                    @Override
+                    public void onClick(View v) {
+                        Log.d("CLIICK", String.valueOf(GameData.turn));
+                        Log.d("CLIICK3", String.valueOf(GameData.currentPlayer));
+                        Log.d("CLIICK2", String.valueOf(GameData.gameModel.getValue().getGAME_STATUS()));
 
-                            if(GameData.gameModel.getValue().getGAME_STATUS()==GameData.STARTED ){
+                        if(GameData.gameModel.getValue().getGAME_STATUS()==GameData.STARTED ){
 
-                                if(GameData.currentPlayer == GameData.turn ){
-                                    click(cell);
-                                }
-
+                            if(GameData.currentPlayer == GameData.turn ){
+                                click(cell);
                             }
+
                         }
+                    }
                 });
 
 
@@ -301,8 +301,8 @@ public class Chessboard {
 
     private boolean mate = true;
     public void click(Cell cell) {
-         isBeingCaptured = false;
-         canChangeTurn = false;
+        isBeingCaptured = false;
+        canChangeTurn = false;
 
 
         turnCont++;
@@ -334,13 +334,13 @@ public class Chessboard {
             }
             //Hide the available moves that are being showed in the last selected cell
             for (int last[] : lastSelections) {
-               hideAvailableMoves( cells[last[0]][last[1]]);
+                hideAvailableMoves( cells[last[0]][last[1]]);
             }
 
             //show the availables moves of the cell. this is only executed if this cell is not being captured
             showAllAvailableMoves(cell);
 
-       //if the cell is being unselected, hide all the availables moves that are being showed
+            //if the cell is being unselected, hide all the availables moves that are being showed
         } else {
             hideLastShownMoves(cell);
         }
@@ -420,7 +420,7 @@ public class Chessboard {
                 int Y = moves[1];
 
                 if (X >= 0 && Y >= 0 && X < 8 && Y < 8) {
-                   hideAvailableMoves( cells[X][Y]);
+                    hideAvailableMoves( cells[X][Y]);
                 }
             }
             cell.availableMoves=new ArrayList<>();
@@ -437,34 +437,34 @@ public class Chessboard {
         }
 
     }
-   private boolean checkMate(){
+    private boolean checkMate(){
         //Change turn becuase chenkKingIsSafe need the cell to be the same type as turn
-       changeTurn();
+        changeTurn();
 
-       for (int i = 0 ; i<8; i++) {
-           for (int j = 0 ; j<8; j++) {
+        for (int i = 0 ; i<8; i++) {
+            for (int j = 0 ; j<8; j++) {
 
-               if( (( GameData.turn == GameData.BLACK && cells[i][j].pieceType > 5) || ( GameData.turn == GameData.WHITE && cells[i][j].pieceType < 6  && cells[i][j].pieceType!=cells[i][j].EMPTY))) {
+                if( (( GameData.turn == GameData.BLACK && cells[i][j].pieceType > 5) || ( GameData.turn == GameData.WHITE && cells[i][j].pieceType < 6  && cells[i][j].pieceType!=cells[i][j].EMPTY))) {
 
-                   availableMoves = cells[i][j].setMoves(false);
+                    availableMoves = cells[i][j].setMoves(false);
 
-                   //if any cell can move , it is not mate
-                   for (int[] moves : availableMoves) {
-                       if (cells[i][j].isValidPosition(moves[0],moves[1]) && checkKingIsSafe(cells[moves[0]][moves[1]],cells[i][j])){
-                           Log.d("PIECETYPE", String.valueOf(cells[i][j].pieceType));
-                           Log.d("PIECETYPE", "X: "+ moves[0] + ", Y: " + moves[1]);
-                           //Undo turn changes
-                           changeTurn();
-                           return false;
-                       }
+                    //if any cell can move , it is not mate
+                    for (int[] moves : availableMoves) {
+                        if (cells[i][j].isValidPosition(moves[0],moves[1]) && checkKingIsSafe(cells[moves[0]][moves[1]],cells[i][j])){
+                            Log.d("PIECETYPE", String.valueOf(cells[i][j].pieceType));
+                            Log.d("PIECETYPE", "X: "+ moves[0] + ", Y: " + moves[1]);
+                            //Undo turn changes
+                            changeTurn();
+                            return false;
+                        }
 
-                   }
+                    }
 
-               }
-           }
-       }
-       //Undo turn changes
-       changeTurn();
+                }
+            }
+        }
+        //Undo turn changes
+        changeTurn();
 
         return true;
     }
@@ -606,8 +606,8 @@ public class Chessboard {
 
     }
 
-    
-    
+
+
     public void setAllDirections(Cell cell) {
         Log.d("setAllDirections", "setAllDirections");
         cell.checkMateMoves.clear();

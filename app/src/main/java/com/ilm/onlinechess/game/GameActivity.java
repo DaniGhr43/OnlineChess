@@ -15,6 +15,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -30,6 +31,7 @@ import com.ilm.onlinechess.User;
 import com.ilm.onlinechess.databinding.ActivityGameBinding;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class GameActivity extends AppCompatActivity  {
 
@@ -52,6 +54,9 @@ public class GameActivity extends AppCompatActivity  {
         binding = ActivityGameBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         gameModel= GameData.gameModel.getValue();
+
+        board = new Chessboard(binding.grid, this, this);
+
 
         if(!GameData.isOffline){
             GameData.fetchGameModel();
@@ -153,7 +158,6 @@ public class GameActivity extends AppCompatActivity  {
 
 
 
-        board = new Chessboard(binding.grid, this, this);
 
         //gameModel=GameData.gameModel.getValue();
 
@@ -216,7 +220,7 @@ public class GameActivity extends AppCompatActivity  {
                 binding.hostRank.setText(("0"));
             }
 
-            if(gameModel.getGAME_STATUS()==GameData.STARTED )
+            if(gameModel.getGAME_STATUS()==GameData.STARTED)
                 binding.cl2.removeView(binding.bntStart);
 
             if(GameData.isLoged){

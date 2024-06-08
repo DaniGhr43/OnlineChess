@@ -31,7 +31,7 @@ import com.ilm.onlinechess.databinding.ActivityGameBinding;
 
 import java.io.IOException;
 
-public class Game extends AppCompatActivity  {
+public class GameActivity extends AppCompatActivity  {
 
     private ActivityGameBinding binding;
     private boolean firstTime = true;
@@ -83,7 +83,7 @@ public class Game extends AppCompatActivity  {
             @Override
             public void handleOnBackPressed() {
                 // Aquí puedes agregar el código que deseas ejecutar cuando se pulsa el botón de atrás
-                new AlertDialog.Builder(Game.this)
+                new AlertDialog.Builder(GameActivity.this)
                         .setMessage("¿Are you sure you want to exit?")
                         .setCancelable(false)
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {

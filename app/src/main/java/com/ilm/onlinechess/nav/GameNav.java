@@ -1,4 +1,4 @@
-package com.ilm.onlinechess;
+package com.ilm.onlinechess.nav;
 
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,7 +12,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
-import com.ilm.onlinechess.databinding.ActivityGameBinding;
+import com.ilm.onlinechess.R;
 import com.ilm.onlinechess.databinding.ActivityGameNavBinding;
 
 public class GameNav extends AppCompatActivity {
@@ -52,7 +52,7 @@ public class GameNav extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Infla el menú; esto añade elementos a la barra de acción si está presente.
-        getMenuInflater().inflate(R.menu.login_nav, menu);
+        getMenuInflater().inflate(R.menu.nav, menu);
         return true;
     }
 

@@ -1,4 +1,4 @@
-package com.ilm.onlinechess.nav_ui.profile;
+package com.ilm.onlinechess.nav.ui;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;

@@ -1,4 +1,4 @@
-package com.ilm.onlinechess.nav_ui.lobby;
+package com.ilm.onlinechess.nav.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,7 +22,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.ilm.onlinechess.game.Game;
+import com.ilm.onlinechess.game.GameActivity;
 import com.ilm.onlinechess.game.GameData;
 import com.ilm.onlinechess.game.GameModel;
 
@@ -112,7 +112,7 @@ public class LobbyFragment extends Fragment{
         model.setHostRank("0");
         GameData.saveGameModel(model, false);
 
-        Intent i = new Intent(getContext(),Game.class);
+        Intent i = new Intent(getContext(), GameActivity.class);
         startActivity(i);
     }
     public void createOnlineGame(){
@@ -139,7 +139,7 @@ public class LobbyFragment extends Fragment{
         GameData.saveGameModel(model, true);
         gameModel = model;
 
-        Intent i = new Intent(getContext(), Game.class);
+        Intent i = new Intent(getContext(), GameActivity.class);
         startActivity(i);
         Log.d("fetchGameModel", String.valueOf(gameModel.gameId));
 
@@ -178,7 +178,7 @@ public class LobbyFragment extends Fragment{
                                 GameData.saveGameModel(model,true);
                                 gameModel = model;
 
-                                Intent i = new Intent(getContext(), Game.class);
+                                Intent i = new Intent(getContext(), GameActivity.class);
                                 startActivity(i);
 
 

@@ -15,10 +15,10 @@
         android:theme="@style/MyTheme"
         tools:targetApi="31">
         <activity
-            android:name=".game.Game"
+            android:name=".game.GameActivity"
             android:exported="false" />
         <activity
-            android:name=".GameNav"
+            android:name=".nav.GameNav"
             android:exported="false"
             android:label="@string/title_activity_login_nav"
             android:theme="@style/MyTheme" />

@@ -30,6 +30,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.ilm.onlinechess.game.GameData;
 import com.ilm.onlinechess.databinding.ActivityMainBinding;
+import com.ilm.onlinechess.nav.GameNav;
 
 public class MainActivity extends AppCompatActivity {
     Button btn;

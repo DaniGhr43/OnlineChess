@@ -88,7 +88,7 @@ public class Chessboard {
         });
 
         if(!GameData.isOffline){
-            joinGame();
+            connectToServer();
         }
 
     }
@@ -119,7 +119,7 @@ public class Chessboard {
     public Chessboard(){
 
     }
-    public void joinGame() {
+    public void connectToServer() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -334,7 +334,7 @@ public class Chessboard {
             }
             //Hide the available moves that are being showed in the last selected cell
             for (int last[] : lastSelections) {
-                cells[last[0]][last[1]].hideAvailableMoves();
+               hideAvailableMoves( cells[last[0]][last[1]]);
             }
 
             //show the availables moves of the cell. this is only executed if this cell is not being captured
@@ -376,7 +376,7 @@ public class Chessboard {
         Bitmap overlayBitmap = checkedCell.bitmaps[6]; // Bitmap to overlay when a cell is clicked(a dot)
 
         //BLACKS. setImageBitmap will set a just dot
-        if(checkedCell.checkKingIsSafe(clickedCell)){
+        if(checkKingIsSafe(checkedCell,clickedCell)){
             if((checkedCell.pieceType==checkedCell.EMPTY || checkedCell.pieceType > 5 ) && clickedCell.pieceType < 6){
                 checkedCell.setImageBitmap(checkedCell.bitmaps[6]);
                 checkedCell.isShowingAvailableMove = true;
@@ -420,11 +420,22 @@ public class Chessboard {
                 int Y = moves[1];
 
                 if (X >= 0 && Y >= 0 && X < 8 && Y < 8) {
-                    cells[X][Y].hideAvailableMoves();
+                   hideAvailableMoves( cells[X][Y]);
                 }
             }
             cell.availableMoves=new ArrayList<>();
         }
+    }
+    public void hideAvailableMoves(Cell cell){
+        Log.d("hideAvailableMoves", "hideAvailableMoves");
+        if(cell.pieceType==EMPTY){
+            cell.setImageBitmap(null);
+            cell.isShowingAvailableMove = false;
+        }else{
+            cell.setImageBitmap(cell.bitmap);
+            cell.isShowingAvailableMove = false;
+        }
+
     }
    private boolean checkMate(){
         //Change turn becuase chenkKingIsSafe need the cell to be the same type as turn
@@ -439,7 +450,7 @@ public class Chessboard {
 
                    //if any cell can move , it is not mate
                    for (int[] moves : availableMoves) {
-                       if (cells[i][j].isValidPosition(moves[0],moves[1]) && cells[moves[0]][moves[1]].checkKingIsSafe(cells[i][j])){
+                       if (cells[i][j].isValidPosition(moves[0],moves[1]) && checkKingIsSafe(cells[moves[0]][moves[1]],cells[i][j])){
                            Log.d("PIECETYPE", String.valueOf(cells[i][j].pieceType));
                            Log.d("PIECETYPE", "X: "+ moves[0] + ", Y: " + moves[1]);
                            //Undo turn changes
@@ -459,41 +470,42 @@ public class Chessboard {
     }
 
 
-
+    public void showBitmap(Cell cell){
+        Log.d("showBitmap", "showBitmap");
+        cell.isShowingAvailableMove = false;
+        if(cell.pieceType==EMPTY){
+            cell.setImageBitmap(null);
+        }else{
+            cell.changeBitmap();
+            cell.setImageBitmap(cell.bitmap);
+        }
+    }
     public void moveCell(Cell cell){
         if ((GameData.turn== WHITE && lastSelectedCell.pieceType < 6 && lastSelectedCell.pieceType != -1) || (GameData.turn == BLACK && lastSelectedCell.pieceType > 5)) {
-            isBeingCaptured = cell.movePiece(lastSelectedCell);
+            //if the cells moves
 
-            //Aux positions are the positions that changed in the board, and the arraylist that will be send to server
-            ArrayList<Integer> auxPositions = new ArrayList<>();
-            auxPositions.add(lastSelectedCell.posX);
-            auxPositions.add(lastSelectedCell.posY);
-            auxPositions.add(cell.posX);
-            auxPositions.add(cell.posY);
 
-            if(cell.pieceType==cell.KING)
-                whiteKing = cell;
-            if(cell.pieceType==cell.KING2)
-                blackKing = cell;
-
-            gameModel.setPositions(auxPositions);
-
-            //Just let to the client that is moving write to the server
-            String userInput = auxPositions.toString();
-            if(GameData.currentPlayer == GameData.turn &&  !GameData.isOffline){
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-
-                            out.write((userInput + "\n").getBytes());
-                            out.flush();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
+            isBeingCaptured=false;
+            if(cell.pieceType!=EMPTY && lastSelectedCell.pieceType!=EMPTY){
+                Log.d("Comida", "ss");
+                isBeingCaptured= true;
             }
+
+            cell.pieceType=lastSelectedCell.pieceType;
+            lastSelectedCell.pieceType = EMPTY;
+
+            //if a pawn reach end line
+            if(cell.pieceType==PAWN && cell.posY==0)
+                cell.pieceType=QUEEN;
+            if(cell.pieceType==PAWN2 && cell.posY==7)
+                cell.pieceType=QUEEN2;
+
+            showBitmap(cell);
+            showBitmap(lastSelectedCell);
+
+
+            //Updates data of the gameModel and sends it to the other client if its online
+            sendData(cell);
 
             //Check if the game has ended
             checkWin();
@@ -504,9 +516,43 @@ public class Chessboard {
         }
     }
 
+
+    private void sendData(Cell cell){
+        //Aux positions are the positions that changed in the board, and the arraylist that will be send to server
+        ArrayList<Integer> auxPositions = new ArrayList<>();
+        auxPositions.add(lastSelectedCell.posX);
+        auxPositions.add(lastSelectedCell.posY);
+        auxPositions.add(cell.posX);
+        auxPositions.add(cell.posY);
+
+        if(cell.pieceType==cell.KING)
+            whiteKing = cell;
+        if(cell.pieceType==cell.KING2)
+            blackKing = cell;
+
+        gameModel.setPositions(auxPositions);
+
+        //Just let to the client that is moving write to the server
+        String userInput = auxPositions.toString();
+        if(GameData.currentPlayer == GameData.turn &&  !GameData.isOffline){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+
+                        out.write((userInput + "\n").getBytes());
+                        out.flush();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+        }
+    }
+
     //first it checks if the king is checked with checkCheckMate,then check if its mate with checkMate()
     private void checkWin(){
-        if(whiteKing.checkCheckMate() || blackKing.checkCheckMate()){
+        if(checkCheckMate(whiteKing) || checkCheckMate(blackKing)){
             if(checkMate()){
                 if(GameData.turn == GameData.BLACK){
                     gameModel.setWinner(GameData.BLACK);
@@ -540,6 +586,137 @@ public class Chessboard {
                 return;
             }
         }
+    }
+    public boolean checkCheckMate(Cell king){
+        Log.d("checkCheckMate", "checkCheckMate");
+
+
+        setAvailableEnemyMoves(king);
+
+        for (ArrayList<int[]> arrays : king.availableEnemyMoves ) {
+            for (int[] enemyMoves : arrays) {
+                //But also an enemy
+                if ((king.posX == enemyMoves[0] && king.posY == enemyMoves[1])   )
+                    return true;
+
+            }
+        }
+
+        return false;
+
+    }
+
+    
+    
+    public void setAllDirections(Cell cell) {
+        Log.d("setAllDirections", "setAllDirections");
+        cell.checkMateMoves.clear();
+
+
+        int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {-1, 1}, {1, -1}, {-1, -1}};
+        int[][] knightMoves = {{2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
+
+        //ALL DIRECTIONS
+        for (int[] direction : directions) {
+            for (int i = 1; i < 8; i++) {
+                int newX = cell.posX + i * direction[0];
+                int newY = cell.posY + i * direction[1];
+
+                if (!cell.isValidPosition(newX, newY)) break;
+
+                int pieceAtNewPos = cell.getPieceAt(newX, newY);
+
+                if (pieceAtNewPos == EMPTY) {
+                    cell.checkMateMoves.add(new int[]{newX, newY});
+                } else {
+                    if (cell.isOpponentPiece(pieceAtNewPos)) {
+                        cell.checkMateMoves.add(new int[]{newX, newY});
+                    }
+                    break; // Stop when a piece is found
+                }
+            }
+        }
+        //KNIGHT DIRECTIONS
+        for (int[] move : knightMoves) {
+            int newX = cell.posX + move[0];
+            int newY = cell.posY + move[1];
+            if (cell.isValidPosition(newX, newY)) {
+                int pieceAtNewPos = cell.getPieceAt(newX, newY);
+                if (pieceAtNewPos == EMPTY || cell.isOpponentPiece(pieceAtNewPos)) {
+                    cell.checkMateMoves.add(new int[]{newX, newY});
+                }
+            }
+        }
+    }
+    public void setAvailableEnemyMoves(Cell cell) {
+        Log.d("setAvailableEnemyMoves", "setAvailableEnemyMoves");
+        setAllDirections(cell);
+        cell.availableEnemyMoves.clear();
+
+        for (int[] move : cell.checkMateMoves) {
+            int X = move[0];
+            int Y = move[1];
+
+            if (cell.isValidPosition(X, Y)) {
+                cell.availableEnemyMoves.add(cell.chessboard.cells[X][Y].setEnemyMoves(true));
+            }
+        }
+    }
+    //Fakes a move from <selectedCell> to <underCheckCell> and checks if the king is safe after that
+    public boolean checkKingIsSafe(Cell underCheckCell, Cell selectedCell) {
+        Log.d("checkKingIsSafe", "checkKingIsSafe");
+        if (underCheckCell.isOpponentPiece(selectedCell.pieceType) || underCheckCell.pieceType == EMPTY) {
+
+            boolean changeWhiteKing = false;
+            boolean changeBlackKing = false;
+
+            //Saves the pieces types to undo the change later
+            int currentOriginalPieceType = underCheckCell.pieceType;
+            int lastOriginalPieceType = selectedCell.pieceType;
+
+            //Fakes the move
+            underCheckCell.pieceType = selectedCell.pieceType;
+            selectedCell.pieceType = EMPTY;
+
+
+            //If the king is the one being clicked, save correct kings positions to not change them after the simulation
+            if (underCheckCell.pieceType == KING) {
+                whiteKing = underCheckCell;
+                changeWhiteKing = true;
+            } else if (underCheckCell.pieceType == KING2) {
+                blackKing = underCheckCell;
+                changeBlackKing = true;
+            }
+
+            //Check that the king is in check after the move
+            boolean kingIsSafe = true;
+            if (GameData.turn == BLACK) {
+                Log.d("dddds", blackKing.posX + " , " + blackKing.posY);
+                if (checkCheckMate(blackKing)) {
+                    kingIsSafe = false;
+                }
+            } else if (GameData.turn == WHITE) {
+                Log.d("dddds", whiteKing.posX + " , " + whiteKing.posY);
+                if (checkCheckMate(whiteKing)) {
+                    kingIsSafe = false;
+                }
+            }
+
+            //Undo changes
+            underCheckCell.pieceType = currentOriginalPieceType;
+            selectedCell.pieceType = lastOriginalPieceType;
+            if (changeWhiteKing) {
+                whiteKing = selectedCell;
+            } else if (changeBlackKing) {
+                blackKing = selectedCell;
+            }
+
+
+
+
+            return kingIsSafe;
+        }
+        return false;
     }
 
 }

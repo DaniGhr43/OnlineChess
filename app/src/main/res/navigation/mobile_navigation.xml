@@ -4,18 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
 
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_lobby">
 
-    <fragment
-        android:id="@+id/nav_home"
-        android:name="com.ilm.onlinechess.ui.login.LoginFragment"
-        android:label="Play"
-        tools:layout="@layout/fragment_login" />
     <fragment
         android:id="@+id/nav_profile"
         android:name="com.ilm.onlinechess.ui.profile.ProfileFragment"
         android:label="Profile"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/nav_lobby"
+        android:name="com.ilm.onlinechess.ui.lobby.LobbyFragment"
+        android:label="Play"
+        tools:layout="@layout/fragment_lobby" />
 
 
 </navigation>

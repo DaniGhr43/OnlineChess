@@ -1,6 +1,9 @@
-package com.ilm.onlinechess.ui.login;
+package com.ilm.onlinechess.ui.lobby;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
 
@@ -23,18 +26,17 @@ import com.ilm.onlinechess.Game.Game;
 import com.ilm.onlinechess.Game.GameData;
 import com.ilm.onlinechess.Game.GameModel;
 
-import com.ilm.onlinechess.Network;
-
-import com.ilm.onlinechess.databinding.FragmentLoginBinding;
+import com.ilm.onlinechess.R;
+import com.ilm.onlinechess.databinding.FragmentLobbyBinding;
 
 
 
 import java.util.Random;
 
 
-public class LoginFragment extends Fragment{
+public class LobbyFragment extends Fragment{
 
-    private FragmentLoginBinding binding;
+    private FragmentLobbyBinding binding;
     private GameModel gameModel;
 
 
@@ -44,7 +46,7 @@ public class LoginFragment extends Fragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        binding = FragmentLoginBinding.inflate(inflater, container, false);
+        binding = FragmentLobbyBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
 
@@ -59,7 +61,7 @@ public class LoginFragment extends Fragment{
             @Override
             public void onClick(View v) {
 
-                if (!Network.isConnected(getContext())) {
+                if (!isConnected(getContext())) {
                     Toast.makeText(getContext(), "Please connect to internet to create or join online session", Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -71,7 +73,7 @@ public class LoginFragment extends Fragment{
         binding.btnJoin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!Network.isConnected(getContext())) {
+                if (!isConnected(getContext())) {
                     Toast.makeText(getContext(), "Please connect to internet to create online session", Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -104,11 +106,12 @@ public class LoginFragment extends Fragment{
         GameModel model = new GameModel();
         GameData.isOffline= true;
         model.setGameId(1234);
-        GameData.saveGameModel(model, false);
         model.setHostPlayer("LocalUser1");
         model.setGuestPlayer("LocalUser2");
         model.setGuestRank("0");
         model.setHostRank("0");
+        GameData.saveGameModel(model, false);
+
         Intent i = new Intent(getContext(),Game.class);
         startActivity(i);
     }
@@ -125,7 +128,7 @@ public class LoginFragment extends Fragment{
             model.setHostPlayer(GameData._user.getValue().getUsername());
             model.setHostRank(String.valueOf(GameData._user.getValue().getRank()));
             model.setHostUri(GameData._user.getValue().getUrlImage());
-
+            model.setGuestUri("");
 
         }else
             model.setHostPlayer("Guest1");
@@ -168,12 +171,12 @@ public class LoginFragment extends Fragment{
                                     model.setGuestPlayer(GameData._user.getValue().getUsername());
                                     model.setGuestUri(GameData._user.getValue().getUrlImage());
 
-                                }
+                                }else
+                                    model.setGuestUri(String.valueOf(R.drawable.avatar));
                                 //Update GameData.bitmap
                                 //Set that bitmap to the imageView
                                 GameData.saveGameModel(model,true);
                                 gameModel = model;
-
 
                                 Intent i = new Intent(getContext(), Game.class);
                                 startActivity(i);
@@ -193,6 +196,14 @@ public class LoginFragment extends Fragment{
     }
 
 
-
+    //
+    public boolean isConnected(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+            return networkInfo != null && networkInfo.isConnected();
+        }
+        return false;
+    }
 
 }

@@ -31,8 +31,7 @@ public class GameData  {
     public static boolean isLoged=false;
     public static int turn = 0;
     public static boolean isOffline;
-    public static Bitmap guestAvatar;
-    public static Bitmap hostAvatar ;
+
 
     public static FirebaseFirestore db = FirebaseFirestore.getInstance();
     public static void saveGameModel(final GameModel model, boolean saveOnBD) {
@@ -95,12 +94,8 @@ public class GameData  {
                 _user.postValue(user);
 
                 db.collection("users")
-                                .
-
-                        document(String.valueOf(user.getEmail()))
-                                .
-
-                        set(user);
+                                .document(String.valueOf(user.getEmail()))
+                                .set(user);
             }
         }).start();
     }

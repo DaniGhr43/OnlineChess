@@ -5,7 +5,6 @@ import androidx.activity.OnBackPressedDispatcher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import android.app.AlertDialog;
@@ -17,6 +16,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -27,7 +27,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.firebase.firestore.DocumentReference;
-import com.ilm.onlinechess.LoginNav;
+import com.ilm.onlinechess.GameNav;
 import com.ilm.onlinechess.R;
 import com.ilm.onlinechess.User;
 import com.ilm.onlinechess.databinding.ActivityGameBinding;
@@ -36,7 +36,7 @@ import java.io.IOException;
 
 public class Game extends AppCompatActivity  {
 
-    ActivityGameBinding binding;
+    private ActivityGameBinding binding;
     private boolean firstTime = true;
     Chessboard board;
     private static GameModel gameModel ;
@@ -44,6 +44,8 @@ public class Game extends AppCompatActivity  {
     private boolean clocksStarted = false;
     private Dialog dialog;
     private boolean statsUpdated = false;
+    public  Bitmap guestAvatar;
+    public  Bitmap hostAvatar ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,8 +104,7 @@ public class Game extends AppCompatActivity  {
                                         throw new RuntimeException(e);
                                     }
                                 }
-
-
+                                GameData.currentPlayer = 0;
                                 gameModel=  new GameModel();
                                 GameData.turn = 0;
                                 finish();
@@ -127,16 +128,29 @@ public class Game extends AppCompatActivity  {
         btnReturn = dialog.findViewById(R.id.btnReturn);
         btnExit.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                System.exit(0);
-            }
+            public void onClick(View v) {finishAffinity();}
         });
 
         btnReturn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(getApplicationContext(), LoginNav.class);
-                startActivity(i);
+                if(!GameData.isOffline){
+                    try {
+                        board.out.close();
+                        board.socket.close();
+                        board.in.close();
+                        //If a player exits when the game is started update his stats
+
+
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                GameData.currentPlayer = 0;
+                gameModel=  new GameModel();
+                GameData.turn = 0;
+                GameData.saveGameModel(gameModel,false);
+                finish();
             }
         });
 
@@ -189,20 +203,18 @@ public class Game extends AppCompatActivity  {
             if(GameData.isLoged  ){
                 //SETS GameData.avatar with the bitmaps of the users
                 changePlayerBitmap(gameModel.getHostUri(),gameModel.getGuestUri());
-
                 //HOST
-                if(GameData.hostAvatar!=null && !GameData.isOffline)
-                    binding.avatarHost.setImageBitmap(GameData.hostAvatar);
-                else
-                    binding.avatarHost.setImageResource(R.drawable.avatar);
+                if(hostAvatar!=null)
+                    binding.avatarHost.setImageBitmap(hostAvatar);
+
 
                 //GUEST
-                if(GameData.guestAvatar!=null && !GameData.isOffline)
-                    binding.avatarGuest.setImageBitmap(GameData.guestAvatar);
-                else
-                    binding.avatarGuest.setImageResource(R.drawable.avatar);
+                if(guestAvatar!=null )
+                    binding.avatarGuest.setImageBitmap(guestAvatar);
+
 
             }else {
+
                 binding.guestRank.setText("0");
                 binding.hostRank.setText(("0"));
             }
@@ -233,8 +245,6 @@ public class Game extends AppCompatActivity  {
 
                     DocumentReference docRef = GameData.db.collection("games").document(String.valueOf(gameModel.gameId));
                     docRef.delete();
-
-
                     updateStats();
                     statsUpdated=true;
                 }
@@ -289,7 +299,7 @@ public class Game extends AppCompatActivity  {
                        .into(new CustomTarget<Bitmap>() {
                            @Override
                            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                                   GameData.hostAvatar=(resource);
+                               hostAvatar=(resource);
 
                            }
 
@@ -315,7 +325,7 @@ public class Game extends AppCompatActivity  {
                    .into(new CustomTarget<Bitmap>() {
                        @Override
                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                           GameData.guestAvatar=(resource);
+                           guestAvatar=(resource);
                        }
 
                        @Override

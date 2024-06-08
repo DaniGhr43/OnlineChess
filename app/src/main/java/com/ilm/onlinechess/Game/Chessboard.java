@@ -18,20 +18,31 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.ilm.onlinechess.R;
 import com.ilm.onlinechess.User;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-public class Chessboard implements Cloneable{
+public class Chessboard {
 
+    final int KING =0, KING2 =6;
+    final int QUEEN =1 , QUEEN2 =7;
+    final int ROOK =2 , ROOK2 =8;
+    final int BISHOP =3 , BISHOP2 =9;
+    final int KNIGHT =4 , KNIGHT2 =10;
+    final int PAWN =5 , PAWN2 =11;
+    final int EMPTY =-1 ;
 
     public GridLayout grid;
     public Context context;
     public Cell[][]  cells ;
-    public ArrayList<int[]> availableMoves;
+    public ArrayList<int[]> availableMoves = new ArrayList<>();
 
     // private int[] lastSelection;
     private ArrayList<int[]> lastSelections = new ArrayList<>();
@@ -51,6 +62,9 @@ public class Chessboard implements Cloneable{
     private int gameId;
     private boolean isBeingCaptured = false;
     private boolean canChangeTurn = false;
+
+    private final Map<String, Integer> initialPiecePositions = createInitialPositions();
+
 
     public Chessboard(GridLayout grid, Context context, LifecycleOwner lifecycleOwner){
         this.lifecycleOwner = lifecycleOwner;
@@ -81,7 +95,30 @@ public class Chessboard implements Cloneable{
         }
 
     }
-
+    private Map<String, Integer> createInitialPositions() {
+        Map<String, Integer> positions = new HashMap<>();
+        positions.put("0,0", ROOK);
+        positions.put("0,1", KNIGHT);
+        positions.put("0,2", BISHOP);
+        positions.put("0,3", QUEEN);
+        positions.put("0,4", KING);
+        positions.put("0,5", BISHOP);
+        positions.put("0,6", KNIGHT);
+        positions.put("0,7", ROOK);
+        for (int i = 0; i < 8; i++) {
+            positions.put("1," + i, PAWN);
+            positions.put("6," + i, PAWN2);
+        }
+        positions.put("7,0", ROOK2);
+        positions.put("7,1", KNIGHT2);
+        positions.put("7,2", BISHOP2);
+        positions.put("7,3", QUEEN2);
+        positions.put("7,4", KING2);
+        positions.put("7,5", BISHOP2);
+        positions.put("7,6", KNIGHT2);
+        positions.put("7,7", ROOK2);
+        return positions;
+    }
     public Chessboard(){
 
     }
@@ -100,7 +137,6 @@ public class Chessboard implements Cloneable{
 
                     //To join the game, send the gameID to the server
                     out = socket.getOutputStream();
-                    //System.out.print(in.readLine());
                     String gameId = String.valueOf(gameModel.getGameId());
                     out.write((gameId + "\n").getBytes());
                     out.flush();
@@ -157,9 +193,6 @@ public class Chessboard implements Cloneable{
                         }
                     }).start();
 
-
-                    //a
-
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -167,25 +200,7 @@ public class Chessboard implements Cloneable{
         }).start();
     }
 
-    public Chessboard clone() {
-        try {
-            Chessboard clonedBoard = (Chessboard) super.clone();
-            clonedBoard.cells = new Cell[8][8];
-            for (int i = 0; i < 8; i++) {
-                for (int j = 0; j < 8; j++) {
-                    clonedBoard.cells[i][j] = this.cells[i][j].clone();
-                    clonedBoard.cells[i][j].chessboard = clonedBoard;
-                }
-            }
-            clonedBoard.whiteKing = this.whiteKing.clone();
-            clonedBoard.whiteKing.chessboard = clonedBoard;
-            clonedBoard.blackKing = this.blackKing.clone();
-            clonedBoard.blackKing.chessboard = clonedBoard;
-            return clonedBoard;
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e); // Manejar la excepción apropiadamente
-        }
-    }
+
     public void createCells(){
 
 
@@ -212,11 +227,13 @@ public class Chessboard implements Cloneable{
         };
         cells = new Cell[8][8];
 
-        for (int y = 0; y < 8; y ++) {
-            for (int x = 0; x < 8; x++) {
+        for (int x = 0; x < 8; x ++) {
+            for (int y = 0; y < 8; y++) {
+                int pieceType = initialPiecePositions.getOrDefault(y + "," + x, EMPTY);
 
-                Cell cell = new Cell(this, y , x, bitmaps);
+                Cell cell = new Cell(this, y , x, bitmaps,pieceType);
                 GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+
                 params.width = 0;
                 params.height =0;
                 params.columnSpec = GridLayout.spec(x, 1f);
@@ -246,11 +263,11 @@ public class Chessboard implements Cloneable{
                 cell.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Log.d("CLOICK", String.valueOf(gameModel.getGAME_STATUS()));
-                            Log.d("dd", String.valueOf(GameData.gameModel.getValue().getGAME_STATUS()));
+                            Log.d("CLIICK", String.valueOf(GameData.turn));
+                            Log.d("CLIICK3", String.valueOf(GameData.currentPlayer));
+                            Log.d("CLIICK2", String.valueOf(GameData.gameModel.getValue().getGAME_STATUS()));
 
                             if(GameData.gameModel.getValue().getGAME_STATUS()==GameData.STARTED ){
-
 
                                 if(GameData.currentPlayer == GameData.turn ){
                                     click(cell);
@@ -309,10 +326,8 @@ public class Chessboard implements Cloneable{
         if (cell.seleccionada) {
 
             //if the cell is a king
-            if ((cell.pieceType == cell.KING || cell.pieceType == cell.KING2)){
-                availableMoves = cell.setMoves();
-            }else
-                availableMoves = cell.setMoves(false);
+
+            availableMoves = cell.setMoves(false);
 
 
             //if the cell is showing an available move(the bitmap of the cell is the dot) and is clicked, move the piece
@@ -418,19 +433,17 @@ public class Chessboard implements Cloneable{
         //Change turn becuase chenkKingIsSafe need the cell to be the same type as turn
        changeTurn();
 
-       for (Cell[] cel : cells) {
-           for (Cell c : cel) {
-               if( (( GameData.turn == GameData.BLACK && c.pieceType > 5) || ( GameData.turn == GameData.WHITE && c.pieceType < 6  && c.pieceType!=c.EMPTY))) {
+       for (int i = 0 ; i<8; i++) {
+           for (int j = 0 ; j<8; j++) {
 
-                   if ((c.pieceType == c.KING || c.pieceType == c.KING2)) {
-                       availableMoves = c.setMoves();
-                   } else
-                       availableMoves = c.setMoves(false);
+               if( (( GameData.turn == GameData.BLACK && cells[i][j].pieceType > 5) || ( GameData.turn == GameData.WHITE && cells[i][j].pieceType < 6  && cells[i][j].pieceType!=cells[i][j].EMPTY))) {
+
+                   availableMoves = cells[i][j].setMoves(false);
 
                    //if any cell can move , it is not mate
                    for (int[] moves : availableMoves) {
-                       if (cells[moves[0]][moves[1]].checkKingIsSafe(c)){
-                           Log.d("PIECETYPE", String.valueOf(c.pieceType));
+                       if (cells[i][j].isValidPosition(moves[0],moves[1]) && cells[moves[0]][moves[1]].checkKingIsSafe(cells[i][j])){
+                           Log.d("PIECETYPE", String.valueOf(cells[i][j].pieceType));
                            Log.d("PIECETYPE", "X: "+ moves[0] + ", Y: " + moves[1]);
                            //Undo turn changes
                            changeTurn();
@@ -453,8 +466,9 @@ public class Chessboard implements Cloneable{
     public void moveCell(Cell cell){
         if ((GameData.turn== WHITE && lastSelectedCell.pieceType < 6 && lastSelectedCell.pieceType != -1) || (GameData.turn == BLACK && lastSelectedCell.pieceType > 5)) {
             isBeingCaptured = cell.movePiece(lastSelectedCell);
-            ArrayList<Integer> auxPositions = new ArrayList<>();
 
+            //Aux positions are the positions that changed in the board, and the arraylist that will be send to server
+            ArrayList<Integer> auxPositions = new ArrayList<>();
             auxPositions.add(lastSelectedCell.posX);
             auxPositions.add(lastSelectedCell.posY);
             auxPositions.add(cell.posX);
@@ -465,8 +479,11 @@ public class Chessboard implements Cloneable{
             if(cell.pieceType==cell.KING2)
                 blackKing = cell;
 
-            Log.d("ddasd",auxPositions.toString());
             gameModel.setPositions(auxPositions);
+
+
+
+
 
             //Just let to the client that is moving write to the server
             String userInput = auxPositions.toString();

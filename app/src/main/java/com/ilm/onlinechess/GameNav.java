@@ -2,9 +2,7 @@ package com.ilm.onlinechess;
 
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
@@ -14,19 +12,19 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
-import com.ilm.onlinechess.databinding.ActivityLoginNavBinding;
+import com.ilm.onlinechess.databinding.ActivityGameBinding;
+import com.ilm.onlinechess.databinding.ActivityGameNavBinding;
 
-public class LoginNav extends AppCompatActivity {
+public class GameNav extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
-    private ActivityLoginNavBinding binding;
+    private ActivityGameNavBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityLoginNavBinding.inflate(getLayoutInflater());
+        binding = ActivityGameNavBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.appBarLoginNav.toolbar);
@@ -37,7 +35,7 @@ public class LoginNav extends AppCompatActivity {
 
         // Configura AppBarConfiguration con los IDs de los destinos de nivel superior
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home,  R.id.nav_profile)
+                  R.id.nav_profile, R.id.nav_lobby)
                 .setOpenableLayout(drawer)
                 .build();
 

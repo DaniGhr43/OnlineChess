@@ -8,36 +8,30 @@
     tools:layout_editor_absoluteX="4dp"
     tools:layout_editor_absoluteY="35dp">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="49dp"
 
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/signInButton"
+        android:layout_width="407dp"
+        android:layout_height="50dp"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/transparent"
+        android:elevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.802"
-        android:background="@drawable/sign_in_button_background">
-
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/signInButton"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:backgroundTint="@color/transparent"
-            android:elevation="0dp" />
-
-    </FrameLayout>
+        app:layout_constraintVertical_bias="0.804" />
 
     <Button
         android:id="@+id/signOutButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorPrimary"
-        android:text="Button"
+        android:backgroundTint="@color/white"
+        android:text="Log out"
         android:visibility="invisible"
         app:cornerRadius="8dp"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

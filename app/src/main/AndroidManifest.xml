@@ -18,7 +18,7 @@
             android:name=".Game.Game"
             android:exported="false" />
         <activity
-            android:name=".LoginNav"
+            android:name=".GameNav"
             android:exported="false"
             android:label="@string/title_activity_login_nav"
             android:theme="@style/MyTheme" />

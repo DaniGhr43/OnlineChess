@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
     private static final int RC_SIGN_IN = 007;
     private GoogleSignInClient mGoogleSignInClient;
-    public static FirebaseAuth mAuth;
+    public FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,12 +53,14 @@ public class MainActivity extends AppCompatActivity {
                 .requestIdToken("180266998589-eg9fuv018j85cme4jbj6dtc1vrrr3i58.apps.googleusercontent.com")
                 .requestEmail()
                 .build();
+
+
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         binding.btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Intent intent= new Intent(getApplicationContext(), LoginNav.class);
+                Intent intent= new Intent(getApplicationContext(), GameNav.class);
                 FirebaseApp.initializeApp(getApplicationContext());
 
 
@@ -118,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
                             loadUser();
 
-                            Intent intent= new Intent(getApplicationContext(), LoginNav.class);
+                            Intent intent= new Intent(getApplicationContext(), GameNav.class);
                             startActivity(intent);
 
                         } else {
@@ -175,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    //Save the value of the loged user
+    //Save the value of the loged user or create one and save it
     public void loadUser(){
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
         String email = firebaseUser.getEmail();
@@ -195,26 +197,20 @@ public class MainActivity extends AppCompatActivity {
 
                         GameData.isLoged = true;
 
+                        //If user exists in BD
                         if (user != null) {
-                            Log.d("USER LOADED","USER LOADED");
                             GameData.updateUser(user);
-                            user.setUrlImage(firebaseUser.getPhotoUrl().toString());
-
+                            Log.d("USER LOADED",user.getUsername());
+                        //If user do not exist in BD, crates one
                         } else {
-                            // CREANDO USUARIO POR PRIMERA VEZ
-                            // CREANDO USUARIO POR PRIMERA VEZ
-                            // User guestUser = new User();
-                            //guestUser.setUsername("Guest");
-                            //GameData.user=guestUser;
-                            //Log.d("ERRORSAVING USER: ","User not found, creatin user");
 
                             User logedUser = new User();
                             logedUser.setEmail(firebaseUser.getEmail());
                             logedUser.setUsername(firebaseUser.getDisplayName());
                             logedUser.setUrlImage(firebaseUser.getPhotoUrl().toString());
-                            Log.d("USER LOADED","photo url :" + logedUser.getUrlImage());
-
                             GameData.updateUser(logedUser);
+                            Log.d("USER CREATED",logedUser.getUsername());
+
                         }
                     }
                 });

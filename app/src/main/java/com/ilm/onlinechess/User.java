@@ -4,6 +4,15 @@ package com.ilm.onlinechess;
 
 
 public class User {
+    public User() {
+        this.username = "Guest";
+        this.rank = 100;
+        this.timespend = "";
+        this.level = 1;
+        this.email = "";
+        this.isHost = false;
+        this.type = -1;
+    }
     private String username;
     private int rank=100;
     private String timespend;
@@ -14,16 +23,6 @@ public class User {
 
 
     private int type;
-
-    public User() {
-        this.username = "Guest";
-        this.rank = 100;
-        this.timespend = "";
-        this.level = 1;
-        this.email = "";
-        this.isHost = false;
-        this.type = -1;
-    }
 
     public void setUsername(String username) {
         this.username = username;

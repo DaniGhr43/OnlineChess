@@ -33,17 +33,14 @@ public class GameNav extends AppCompatActivity {
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
 
-        // Configura AppBarConfiguration con los IDs de los destinos de nivel superior
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                  R.id.nav_profile, R.id.nav_lobby)
+                R.id.nav_profile, R.id.nav_lobby)
                 .setOpenableLayout(drawer)
                 .build();
 
-        // Obtén NavHostFragment y NavController
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment_content_login_nav);
         NavController navController = navHostFragment.getNavController();
 
-        // Configura ActionBar con NavController y AppBarConfiguration
 
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
@@ -51,7 +48,6 @@ public class GameNav extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Infla el menú; esto añade elementos a la barra de acción si está presente.
         getMenuInflater().inflate(R.menu.nav, menu);
         return true;
     }

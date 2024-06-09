@@ -26,8 +26,6 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView  {
     public boolean isShowingAvailableMove=false;
 
     public int backgroudColor ;
-    private final int WHITE=0;
-    private final int BLACK=1;
     public Chessboard chessboard;
     public ArrayList<int[]> availableMoves = new ArrayList<>();
     public ArrayList<int[]> checkMateMoves= new ArrayList<>();
@@ -57,7 +55,7 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView  {
         if(seleccionada )
             setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         else{
-            if(backgroudColor==WHITE)
+            if(backgroudColor==GameData.WHITE)
                 setBackgroundColor((Color.WHITE));
             else
                 setBackgroundColor((Color.GRAY));
@@ -228,7 +226,7 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView  {
     private void addKnightMoves() {
         Log.d("addKnightMoves", "addKnightMoves");
 
-        // Movimiento del caballo
+
 
         int[][] moves = {
                 {2, 1}, {2, -1}, {-2, 1}, {-2, -1},
@@ -247,7 +245,7 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView  {
     }
 
     private void addKingMoves() {
-        // Movimiento del rey
+
         int[][] moves = {
                 {1, 0}, {-1, 0}, {0, 1}, {0, -1},
                 {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
@@ -271,10 +269,9 @@ public class Cell extends androidx.appcompat.widget.AppCompatImageView  {
         int startRow = isWhite ? 6 : 1;
 
 
-        // Movimiento hacia adelante
+
         if (getPieceAt(posX, posY + direction) == EMPTY ) {
             availableMoves.add(new int[]{posX, posY + direction});
-            // Movimiento doble si está en la fila inicial
         }
         if (posY == startRow && getPieceAt(posX, posY + 2 * direction) == EMPTY) {
             if(isValidPosition(posX, posY + 2 * direction))

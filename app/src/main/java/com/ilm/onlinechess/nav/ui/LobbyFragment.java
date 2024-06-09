@@ -154,7 +154,7 @@ public class LobbyFragment extends Fragment{
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        // Convertir el documento a un objeto GameModel
+                        // Convert the document to an GameModel object
                         GameModel model = documentSnapshot.toObject(GameModel.class);
 
                         if (model != null) {
@@ -188,7 +188,6 @@ public class LobbyFragment extends Fragment{
                             }
 
                         } else {
-                            // Guardar el modelo de juego (parece que debería ser en caso de que sea no nulo, revisa esto)
                             binding.gameID.setError("The game does not exists");
                         }
                     }

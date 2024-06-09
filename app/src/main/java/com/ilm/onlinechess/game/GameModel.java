@@ -61,14 +61,6 @@ public class GameModel {
         this.winner = winner;
     }
 
-    public int getCurrentPlayer() {
-        return currentPlayer;
-    }
-
-    public void setCurrentPlayer(int currentPlayer) {
-        this.currentPlayer = currentPlayer;
-    }
-
     public ArrayList<Integer> getPositions() {
         return positions;
     }

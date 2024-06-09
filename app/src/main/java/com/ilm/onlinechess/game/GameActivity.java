@@ -31,18 +31,18 @@ import com.ilm.onlinechess.databinding.ActivityGameBinding;
 
 import java.io.IOException;
 
-public class GameActivity extends AppCompatActivity  {
+public class GameActivity extends AppCompatActivity {
 
     private ActivityGameBinding binding;
     private boolean firstTime = true;
     Chessboard board;
-    private static GameModel gameModel ;
+    private static GameModel gameModel;
     private Button btnExit, btnReturn;
     private boolean clocksStarted = false;
     private Dialog dialog;
     private boolean statsUpdated = false;
-    public  Bitmap guestAvatar;
-    public  Bitmap hostAvatar ;
+    public Bitmap guestAvatar;
+    public Bitmap hostAvatar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,14 +51,14 @@ public class GameActivity extends AppCompatActivity  {
 
         binding = ActivityGameBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        gameModel= GameData.gameModel.getValue();
+        gameModel = GameData.gameModel.getValue();
 
         board = new Chessboard(binding.grid, this, this);
 
 
-        if(!GameData.isOffline){
+        if (!GameData.isOffline) {
             GameData.fetchGameModel();
-        }else{
+        } else {
 
             binding.trophy1.setVisibility(com.google.android.material.R.id.invisible);
             binding.trophy2.setVisibility(com.google.android.material.R.id.invisible);
@@ -80,7 +80,6 @@ public class GameActivity extends AppCompatActivity  {
         });
 
 
-
         OnBackPressedDispatcher dispatcher = getOnBackPressedDispatcher();
         dispatcher.addCallback(this, new OnBackPressedCallback(true) {
             @Override
@@ -93,7 +92,7 @@ public class GameActivity extends AppCompatActivity  {
                             public void onClick(DialogInterface dialog, int id) {
 
                                 //if the game is online update stats
-                                if(!GameData.isOffline){
+                                if (!GameData.isOffline) {
                                     try {
                                         board.out.close();
                                         board.socket.close();
@@ -105,7 +104,7 @@ public class GameActivity extends AppCompatActivity  {
                                     }
                                 }
                                 GameData.currentPlayer = 0;
-                                gameModel=  new GameModel();
+                                gameModel = new GameModel();
                                 GameData.turn = 0;
                                 finish();
                             }
@@ -119,22 +118,24 @@ public class GameActivity extends AppCompatActivity  {
 
         //Change the user avatar depending on the user
 
-        dialog = new Dialog (this);
+        dialog = new Dialog(this);
         dialog.setContentView(R.layout.custom_layout);
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         dialog.getWindow().setBackgroundDrawable(getResources().getDrawable(R.drawable.custom_dialog_bg));
         dialog.setCancelable(false);
         btnExit = dialog.findViewById(R.id.btnExit);
         btnReturn = dialog.findViewById(R.id.btnReturn);
         btnExit.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {finishAffinity();}
+            public void onClick(View v) {
+                finishAffinity();
+            }
         });
 
         btnReturn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!GameData.isOffline){
+                if (!GameData.isOffline) {
                     try {
                         board.out.close();
                         board.socket.close();
@@ -147,14 +148,12 @@ public class GameActivity extends AppCompatActivity  {
                     }
                 }
                 GameData.currentPlayer = 0;
-                gameModel=  new GameModel();
+                gameModel = new GameModel();
                 GameData.turn = 0;
-                GameData.saveGameModel(gameModel,false);
+                GameData.saveGameModel(gameModel, false);
                 finish();
             }
         });
-
-
 
 
         //gameModel=GameData.gameModel.getValue();
@@ -168,9 +167,9 @@ public class GameActivity extends AppCompatActivity  {
         int margin = (int) (height * 0.25);
         // Obtener los parámetros de diseño del GridLayout
 
-        LinearLayout.LayoutParams param = new LinearLayout.LayoutParams( (width),  (height) );
+        LinearLayout.LayoutParams param = new LinearLayout.LayoutParams((width), (height));
 
-        param.height= (int) (height*0.9);
+        param.height = (int) (height * 0.9);
 
         // Aplicar los nuevos parámetros de diseño al GridLayout
         binding.linearLayout.setLayoutParams(param);
@@ -184,7 +183,7 @@ public class GameActivity extends AppCompatActivity  {
             public void onClick(View v) {
 
 
-                if(!binding.gameGuest.getText().toString().equals("Waiting for player..."))
+                if (!binding.gameGuest.getText().toString().equals("Waiting for player..."))
                     startGame();
 
 
@@ -193,35 +192,35 @@ public class GameActivity extends AppCompatActivity  {
 
     }
 
-    public void updateUI(){
+    public void updateUI() {
 
 
-        if(gameModel!=null){
+        if (gameModel != null) {
 
             //Avatar bitmaps
-            if(GameData.isLoged  ){
+            if (GameData.isLoged) {
                 //SETS GameData.avatar with the bitmaps of the users
-                changePlayerBitmap(gameModel.getHostUri(),gameModel.getGuestUri());
+                changePlayerBitmap(gameModel.getHostUri(), gameModel.getGuestUri());
                 //HOST
-                if(hostAvatar!=null)
+                if (hostAvatar != null)
                     binding.avatarHost.setImageBitmap(hostAvatar);
 
 
                 //GUEST
-                if(guestAvatar!=null )
+                if (guestAvatar != null)
                     binding.avatarGuest.setImageBitmap(guestAvatar);
 
 
-            }else {
+            } else {
 
                 binding.guestRank.setText("0");
                 binding.hostRank.setText(("0"));
             }
 
-            if(gameModel.getGAME_STATUS()==GameData.STARTED)
+            if (gameModel.getGAME_STATUS() == GameData.STARTED)
                 binding.cl2.removeView(binding.bntStart);
 
-            if(GameData.isLoged){
+            if (GameData.isLoged) {
                 binding.guestRank.setText(String.valueOf(gameModel.getGuestRank()));
                 binding.hostRank.setText(String.valueOf(gameModel.getHostRank()));
             }
@@ -230,22 +229,22 @@ public class GameActivity extends AppCompatActivity  {
             binding.gameGuest.setText(gameModel.getGuestPlayer());
             binding.gameHost.setText(gameModel.getHostPlayer());
 
-            if(gameModel.getGAME_STATUS()==GameData.FINISHED){
+            if (gameModel.getGAME_STATUS() == GameData.FINISHED) {
                 TextView winner = dialog.findViewById(R.id.winner);
-                if(gameModel.getWinner() == GameData.WHITE)
+                if (gameModel.getWinner() == GameData.WHITE)
                     winner.setText("White");
-                else if(gameModel.getWinner() == GameData.BLACK)
+                else if (gameModel.getWinner() == GameData.BLACK)
                     winner.setText("Black");
 
-                GameData.turn=GameData.WHITE;
+                GameData.turn = GameData.WHITE;
 
-                if(!statsUpdated){
+                if (!statsUpdated) {
                     //Delete the doc game in the bd in the client that is loosing, because is the last one to use the doc
 
                     DocumentReference docRef = GameData.db.collection("games").document(String.valueOf(gameModel.gameId));
                     docRef.delete();
                     updateStats();
-                    statsUpdated=true;
+                    statsUpdated = true;
                 }
 
                 dialog.show();
@@ -254,25 +253,25 @@ public class GameActivity extends AppCompatActivity  {
         }
     }
 
-    public void updateStats(){
+    public void updateStats() {
 
-        if(GameData.currentPlayer == gameModel.getWinner() && GameData.isLoged){
-            UserDTO user =  GameData._user.getValue();
-            user.setRank(user.getRank()+20);
-            user.setLevel(user.getLevel()+0.25);
+        if (GameData.currentPlayer == gameModel.getWinner() && GameData.isLoged) {
+            UserDTO user = GameData._user.getValue();
+            user.setRank(user.getRank() + 20);
+            user.setLevel(user.getLevel() + 0.25);
 
             GameData.updateUser(user);
-        }else if(GameData.isLoged){
-            UserDTO user =  GameData._user.getValue();
-            if(user.getRank()>0)
-                user.setRank(user.getRank()-20);
-            user.setLevel(user.getLevel()+0.10);
+        } else if (GameData.isLoged) {
+            UserDTO user = GameData._user.getValue();
+            if (user.getRank() > 0)
+                user.setRank(user.getRank() - 20);
+            user.setLevel(user.getLevel() + 0.10);
 
             GameData.updateUser(user);
         }
     }
 
-    public void startGame(){
+    public void startGame() {
         updateUI();
 
         gameModel.setGameId(GameData.gameModel.getValue().gameId);
@@ -283,66 +282,61 @@ public class GameActivity extends AppCompatActivity  {
     }
 
 
+    public void changePlayerBitmap(String uriHost, String uriGuest) {
+        //if (GameData.isLoged ) {
+        Uri photoUrl = Uri.parse((uriHost));
+        // Uri photoUrl = Uri.parse(GameData._user.getValue().getUrlImage());
+        if (photoUrl != null) {
+            // Use  Glide to load the image
+            Glide.with(this)
+                    .asBitmap()
+                    .load(photoUrl)
+                    .into(new CustomTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                            hostAvatar = (resource);
+
+                        }
+
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                        }
+
+                        @Override
+                        public void onLoadFailed(@Nullable Drawable errorDrawable) {
+
+                        }
+                    });
+        }
+        photoUrl = Uri.parse((uriGuest));
+        // Uri photoUrl = Uri.parse(GameData._user.getValue().getUrlImage());
+        if (photoUrl != null) {
+
+            Glide.with(this)
+                    .asBitmap()
+                    .load(photoUrl)
+                    .into(new CustomTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                            guestAvatar = (resource);
+                        }
+
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                        }
+
+                        @Override
+                        public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                            super.onLoadFailed(errorDrawable);
+
+                        }
+                    });
+        }
+
+    }
 
 
 
-   public void changePlayerBitmap(String uriHost, String uriGuest){
-       //if (GameData.isLoged ) {
-           Uri photoUrl = Uri.parse((uriHost));
-          // Uri photoUrl = Uri.parse(GameData._user.getValue().getUrlImage());
-           if (photoUrl != null) {
-               // Usar Glide para cargar la imagen
-               Glide.with(this)
-                       .asBitmap()
-                       .load(photoUrl)
-                       .into(new CustomTarget<Bitmap>() {
-                           @Override
-                           public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                               hostAvatar=(resource);
-
-                           }
-
-                           @Override
-                           public void onLoadCleared(@Nullable Drawable placeholder) {
-                               // Manejo del placeholder o acciones de limpieza si es necesario
-                           }
-
-                           @Override
-                           public void onLoadFailed(@Nullable Drawable errorDrawable) {
-                               super.onLoadFailed(errorDrawable);
-                               // Manejo de errores
-                           }
-                       });
-           }
-       photoUrl = Uri.parse((uriGuest));
-       // Uri photoUrl = Uri.parse(GameData._user.getValue().getUrlImage());
-       if (photoUrl != null) {
-           // Usar Glide para cargar la imagen
-           Glide.with(this)
-                   .asBitmap()
-                   .load(photoUrl)
-                   .into(new CustomTarget<Bitmap>() {
-                       @Override
-                       public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                           guestAvatar=(resource);
-                       }
-
-                       @Override
-                       public void onLoadCleared(@Nullable Drawable placeholder) {
-                           // Manejo del placeholder o acciones de limpieza si es necesario
-                       }
-
-                       @Override
-                       public void onLoadFailed(@Nullable Drawable errorDrawable) {
-                           super.onLoadFailed(errorDrawable);
-                           // Manejo de errores
-                       }
-                   });
-       }
-      // }
-   }
-
-
-
-   //COMPROBAR ISLOGED
 }

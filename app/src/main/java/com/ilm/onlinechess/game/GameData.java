@@ -103,5 +103,5 @@ public class GameData  {
 
 }
 
-//bloqeuar si intenas crear sesion estand sin conexion
+
 

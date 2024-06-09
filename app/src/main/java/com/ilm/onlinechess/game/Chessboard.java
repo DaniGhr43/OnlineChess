@@ -28,28 +28,28 @@ import java.util.Map;
 
 public class Chessboard {
 
-    final int KING =0, KING2 =6;
-    final int QUEEN =1 , QUEEN2 =7;
-    final int ROOK =2 , ROOK2 =8;
-    final int BISHOP =3 , BISHOP2 =9;
-    final int KNIGHT =4 , KNIGHT2 =10;
-    final int PAWN =5 , PAWN2 =11;
-    final int EMPTY =-1 ;
+    final int KING = 0, KING2 = 6;
+    final int QUEEN = 1, QUEEN2 = 7;
+    final int ROOK = 2, ROOK2 = 8;
+    final int BISHOP = 3, BISHOP2 = 9;
+    final int KNIGHT = 4, KNIGHT2 = 10;
+    final int PAWN = 5, PAWN2 = 11;
+    final int EMPTY = -1;
 
     public GridLayout grid;
     public Context context;
-    public Cell[][]  cells ;
+    public Cell[][] cells;
     public ArrayList<int[]> availableMoves = new ArrayList<>();
 
     // private int[] lastSelection;
     private ArrayList<int[]> lastSelections = new ArrayList<>();
     private Cell lastSelectedCell;
 
-    private final int WHITE=0;
-    private final int BLACK=1;
-    public  Cell whiteKing,blackKing;
+    private final int WHITE = 0;
+    private final int BLACK = 1;
+    public Cell whiteKing, blackKing;
     private int[][] matriz = new int[8][8];
-    FirebaseFirestore db ;
+    FirebaseFirestore db;
     private GameModel gameModel = new GameModel();
     private LifecycleOwner lifecycleOwner;
     private int turnCont;
@@ -63,9 +63,9 @@ public class Chessboard {
     private final Map<String, Integer> initialPiecePositions = createInitialPositions();
 
 
-    public Chessboard(GridLayout grid, Context context, LifecycleOwner lifecycleOwner){
+    public Chessboard(GridLayout grid, Context context, LifecycleOwner lifecycleOwner) {
         this.lifecycleOwner = lifecycleOwner;
-        this.grid=grid;
+        this.grid = grid;
         this.context = context;
         gameModel = GameData.gameModel.getValue();
         this.gameId = gameId;
@@ -73,25 +73,22 @@ public class Chessboard {
         GameData.gameModel.observe(lifecycleOwner, new Observer<GameModel>() {
             @Override
             public void onChanged(GameModel newGameModel) {
-                Log.d("changed","CHANGE");
+                Log.d("changed", "CHANGE");
                 gameModel = newGameModel;
                 ArrayList<Integer> clickedPositions = gameModel.getPositions();
-                if (clickedPositions != null && !clickedPositions.isEmpty()){
-
-
+                if (clickedPositions != null && !clickedPositions.isEmpty()) {
                     click(cells[clickedPositions.get(0)][clickedPositions.get(1)]);
                     click(cells[clickedPositions.get(2)][clickedPositions.get(3)]);
-
                 }
-
             }
         });
 
-        if(!GameData.isOffline){
+        if (!GameData.isOffline) {
             connectToServer();
         }
 
     }
+
     private Map<String, Integer> createInitialPositions() {
         Map<String, Integer> positions = new HashMap<>();
         positions.put("0,0", ROOK2);
@@ -116,9 +113,11 @@ public class Chessboard {
         positions.put("7,7", ROOK);
         return positions;
     }
-    public Chessboard(){
+
+    public Chessboard() {
 
     }
+
     public void connectToServer() {
         new Thread(new Runnable() {
             @Override
@@ -151,8 +150,8 @@ public class Chessboard {
                                 ArrayList<Integer> positions = new ArrayList<>();
 
                                 //If the server send us exit message, end the game
-                                if(serverResponse.equals("EXIT")){
-                                    if(GameData.currentPlayer==GameData.BLACK){
+                                if (serverResponse.equals("EXIT")) {
+                                    if (GameData.currentPlayer == GameData.BLACK) {
                                         gameModel.setWinner(GameData.BLACK);
                                         try {
                                             out.close();
@@ -160,7 +159,7 @@ public class Chessboard {
                                         } catch (IOException e) {
                                             throw new RuntimeException(e);
                                         }
-                                    }else if(GameData.currentPlayer==GameData.WHITE){
+                                    } else if (GameData.currentPlayer == GameData.WHITE) {
                                         gameModel.setWinner(GameData.WHITE);
                                         try {
                                             out.close();
@@ -170,7 +169,7 @@ public class Chessboard {
                                         }
                                     }
                                     gameModel.setGAME_STATUS(GameData.FINISHED);
-                                    GameData.saveGameModel(gameModel,true);
+                                    GameData.saveGameModel(gameModel, true);
                                     break;
                                 }
 
@@ -180,9 +179,9 @@ public class Chessboard {
                                 }
 
                                 gameModel.setPositions(positions);
-                                GameData.saveGameModel(gameModel,false);
+                                GameData.saveGameModel(gameModel, false);
                             }
-                            Log.d("FINN ","SIIS");
+                            Log.d("FINN ", "SIIS");
 
                             in.close();
                         } catch (IOException e) {
@@ -198,7 +197,7 @@ public class Chessboard {
     }
 
 
-    public void createCells(){
+    public void createCells() {
 
 
         db = FirebaseFirestore.getInstance();
@@ -224,15 +223,15 @@ public class Chessboard {
         };
         cells = new Cell[8][8];
 
-        for (int x = 0; x < 8; x ++) {
+        for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
                 int pieceType = initialPiecePositions.getOrDefault(y + "," + x, EMPTY);
 
-                Cell cell = new Cell(this, y , x, bitmaps,pieceType);
+                Cell cell = new Cell(this, y, x, bitmaps, pieceType);
                 GridLayout.LayoutParams params = new GridLayout.LayoutParams();
 
                 params.width = 0;
-                params.height =0;
+                params.height = 0;
                 params.columnSpec = GridLayout.spec(x, 1f);
                 params.rowSpec = GridLayout.spec(y, 1f);
 
@@ -240,15 +239,15 @@ public class Chessboard {
 
                 // Asigna colores alternados para las celdas
 
-                if ((x+y) % 2 == 0) {
+                if ((x + y) % 2 == 0) {
                     cell.setBackgroundColor(Color.WHITE);
-                    cell.backgroudColor=0;
+                    cell.backgroudColor = 0;
                 } else {
                     cell.setBackgroundColor(Color.GRAY);
-                    cell.backgroudColor=1;
+                    cell.backgroudColor = 1;
                 }
-                final int  XX= x;
-                final int  YY= y;
+                final int XX = x;
+                final int YY = y;
 
 
                 if (cell.pieceType == cell.KING) {
@@ -264,9 +263,9 @@ public class Chessboard {
                         Log.d("CLIICK3", String.valueOf(GameData.currentPlayer));
                         Log.d("CLIICK2", String.valueOf(GameData.gameModel.getValue().getGAME_STATUS()));
 
-                        if(GameData.gameModel.getValue().getGAME_STATUS()==GameData.STARTED ){
+                        if (GameData.gameModel.getValue().getGAME_STATUS() == GameData.STARTED) {
 
-                            if(GameData.currentPlayer == GameData.turn ){
+                            if (GameData.currentPlayer == GameData.turn) {
                                 click(cell);
                             }
 
@@ -275,7 +274,7 @@ public class Chessboard {
                 });
 
 
-                cells[x][y]=cell;
+                cells[x][y] = cell;
 
                 grid.addView(cell);
 
@@ -284,22 +283,20 @@ public class Chessboard {
         }
 
 
-
     }
 
 
     private void changeTurn() {
-        GameData.turn=((GameData.turn == WHITE) ? BLACK : WHITE);
+        GameData.turn = ((GameData.turn == WHITE) ? BLACK : WHITE);
 
-        if(GameData.isOffline)
-            GameData.currentPlayer=((GameData.currentPlayer == WHITE) ? BLACK : WHITE);
+        if (GameData.isOffline)
+            GameData.currentPlayer = ((GameData.currentPlayer == WHITE) ? BLACK : WHITE);
 
     }
 
 
-
-
     private boolean mate = true;
+
     public void click(Cell cell) {
         isBeingCaptured = false;
         canChangeTurn = false;
@@ -311,7 +308,7 @@ public class Chessboard {
 
 
         //Change the state of selected in the clicked and last clicked cell if it can be changed
-        if ( (cell.pieceType < 6 && GameData.turn == WHITE )|| (cell.pieceType > 5 && GameData.turn == BLACK) || cell.pieceType == cell.EMPTY || cell.isShowingAvailableMove )
+        if ((cell.pieceType < 6 && GameData.turn == WHITE) || (cell.pieceType > 5 && GameData.turn == BLACK) || cell.pieceType == cell.EMPTY || cell.isShowingAvailableMove)
             cell.setSeleccionada(!cell.seleccionada);
 
 
@@ -322,23 +319,23 @@ public class Chessboard {
         //if the cell is being selected
         if (cell.seleccionada) {
 
-            //if the cell is a king
 
             availableMoves = cell.setMoves(false);
 
 
             //if the cell is showing an available move(the bitmap of the cell is the dot) and is clicked, move the piece
             if (cell.isShowingAvailableMove) {
-                //If its its turn
                 moveCell(cell);
             }
             //Hide the available moves that are being showed in the last selected cell
             for (int last[] : lastSelections) {
-                hideAvailableMoves( cells[last[0]][last[1]]);
+                hideAvailableMoves(cells[last[0]][last[1]]);
             }
 
-            //show the availables moves of the cell. this is only executed if this cell is not being captured
-            showAllAvailableMoves(cell);
+            //show the availables moves of the cell.
+            if (!isBeingCaptured) {
+                showAllAvailableMoves(cell);
+            }
 
             //if the cell is being unselected, hide all the availables moves that are being showed
         } else {
@@ -349,51 +346,51 @@ public class Chessboard {
             changeTurn();
 
 
-
         cells[cell.posX][cell.posY] = cell;
 
         lastSelectedCell = cell;
     }
 
-    private void showAllAvailableMoves(Cell cell){
-        if (!isBeingCaptured) {
-            lastSelections.clear();
+    private void showAllAvailableMoves(Cell cell) {
 
-            for (int moves[] : availableMoves) {
-                int X = moves[0];
-                int Y = moves[1];
-                //correct values inside the board
-                if (X >= 0 && Y >= 0 && X < 8 && Y < 8) {
-                    showSingleAvailableMove(cells[X][Y],cell);
-                    lastSelections.add(new int[]{X, Y});
-                }
+        lastSelections.clear();
+
+        for (int moves[] : availableMoves) {
+            int X = moves[0];
+            int Y = moves[1];
+            //correct values inside the board
+            if (X >= 0 && Y >= 0 && X < 8 && Y < 8) {
+                showSingleAvailableMove(cells[X][Y], cell);
+                lastSelections.add(new int[]{X, Y});
             }
         }
+
     }
-    public void showSingleAvailableMove(Cell checkedCell, Cell clickedCell){
+
+    public void showSingleAvailableMove(Cell checkedCell, Cell clickedCell) {
         Log.d("showAvailableMove", "showAvailableMove");
 
         Bitmap overlayBitmap = checkedCell.bitmaps[6]; // Bitmap to overlay when a cell is clicked(a dot)
 
         //BLACKS. setImageBitmap will set a just dot
-        if(checkKingIsSafe(checkedCell,clickedCell)){
-            if((checkedCell.pieceType==checkedCell.EMPTY || checkedCell.pieceType > 5 ) && clickedCell.pieceType < 6){
+        if (checkKingIsSafe(checkedCell, clickedCell)) {
+            if ((checkedCell.pieceType == checkedCell.EMPTY || checkedCell.pieceType > 5) && clickedCell.pieceType < 6) {
                 checkedCell.setImageBitmap(checkedCell.bitmaps[6]);
                 checkedCell.isShowingAvailableMove = true;
             }
             //WHITES. setImageBitmap will set a just dot
-            if((checkedCell.pieceType==checkedCell.EMPTY || checkedCell.pieceType < 6 ) && clickedCell.pieceType > 5 ){
+            if ((checkedCell.pieceType == checkedCell.EMPTY || checkedCell.pieceType < 6) && clickedCell.pieceType > 5) {
                 checkedCell.setImageBitmap(checkedCell.bitmaps[6]);
                 checkedCell.isShowingAvailableMove = true;
             }
             //WHITES. setImageBitmap will set a dot combined with the piece
-            if (checkedCell.pieceType > 5 && clickedCell.pieceType < 6 && checkedCell.pieceType!=checkedCell.EMPTY) {
+            if (checkedCell.pieceType > 5 && clickedCell.pieceType < 6 && checkedCell.pieceType != checkedCell.EMPTY) {
                 Bitmap combinedBitmap = overlayBitmaps(checkedCell.bitmap, overlayBitmap);
                 checkedCell.setImageBitmap(combinedBitmap);
                 checkedCell.isShowingAvailableMove = true;
             }
             //BLACKS. setImageBitmap will set a dot combined with the piece
-            if ( checkedCell.pieceType < 6 && clickedCell.pieceType > 5 && checkedCell.pieceType!=checkedCell.EMPTY) {
+            if (checkedCell.pieceType < 6 && clickedCell.pieceType > 5 && checkedCell.pieceType != checkedCell.EMPTY) {
                 Bitmap combinedBitmap = overlayBitmaps(checkedCell.bitmap, overlayBitmap);
                 checkedCell.setImageBitmap(combinedBitmap);
                 checkedCell.isShowingAvailableMove = true;
@@ -413,46 +410,48 @@ public class Chessboard {
     }
 
 
-    private void hideLastShownMoves(Cell cell){
-        if (availableMoves!=null){
-            for (  int moves[] : availableMoves) {
+    private void hideLastShownMoves(Cell cell) {
+        if (availableMoves != null) {
+            for (int moves[] : availableMoves) {
                 int X = moves[0];
                 int Y = moves[1];
 
                 if (X >= 0 && Y >= 0 && X < 8 && Y < 8) {
-                    hideAvailableMoves( cells[X][Y]);
+                    hideAvailableMoves(cells[X][Y]);
                 }
             }
-            cell.availableMoves=new ArrayList<>();
+            cell.availableMoves = new ArrayList<>();
         }
     }
-    public void hideAvailableMoves(Cell cell){
+
+    public void hideAvailableMoves(Cell cell) {
         Log.d("hideAvailableMoves", "hideAvailableMoves");
-        if(cell.pieceType==EMPTY){
+        if (cell.pieceType == EMPTY) {
             cell.setImageBitmap(null);
             cell.isShowingAvailableMove = false;
-        }else{
+        } else {
             cell.setImageBitmap(cell.bitmap);
             cell.isShowingAvailableMove = false;
         }
 
     }
-    private boolean checkMate(){
+
+    private boolean checkMate() {
         //Change turn becuase chenkKingIsSafe need the cell to be the same type as turn
         changeTurn();
 
-        for (int i = 0 ; i<8; i++) {
-            for (int j = 0 ; j<8; j++) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
 
-                if( (( GameData.turn == GameData.BLACK && cells[i][j].pieceType > 5) || ( GameData.turn == GameData.WHITE && cells[i][j].pieceType < 6  && cells[i][j].pieceType!=cells[i][j].EMPTY))) {
+                if (((GameData.turn == GameData.BLACK && cells[i][j].pieceType > 5) || (GameData.turn == GameData.WHITE && cells[i][j].pieceType < 6 && cells[i][j].pieceType != cells[i][j].EMPTY))) {
 
                     availableMoves = cells[i][j].setMoves(false);
 
                     //if any cell can move , it is not mate
                     for (int[] moves : availableMoves) {
-                        if (cells[i][j].isValidPosition(moves[0],moves[1]) && checkKingIsSafe(cells[moves[0]][moves[1]],cells[i][j])){
+                        if (cells[i][j].isValidPosition(moves[0], moves[1]) && checkKingIsSafe(cells[moves[0]][moves[1]], cells[i][j])) {
                             Log.d("PIECETYPE", String.valueOf(cells[i][j].pieceType));
-                            Log.d("PIECETYPE", "X: "+ moves[0] + ", Y: " + moves[1]);
+                            Log.d("PIECETYPE", "X: " + moves[0] + ", Y: " + moves[1]);
                             //Undo turn changes
                             changeTurn();
                             return false;
@@ -470,35 +469,36 @@ public class Chessboard {
     }
 
 
-    public void showBitmap(Cell cell){
+    public void showBitmap(Cell cell) {
         Log.d("showBitmap", "showBitmap");
         cell.isShowingAvailableMove = false;
-        if(cell.pieceType==EMPTY){
+        if (cell.pieceType == EMPTY) {
             cell.setImageBitmap(null);
-        }else{
+        } else {
             cell.changeBitmap();
             cell.setImageBitmap(cell.bitmap);
         }
     }
-    public void moveCell(Cell cell){
-        if ((GameData.turn== WHITE && lastSelectedCell.pieceType < 6 && lastSelectedCell.pieceType != -1) || (GameData.turn == BLACK && lastSelectedCell.pieceType > 5)) {
+
+    public void moveCell(Cell cell) {
+        if ((GameData.turn == WHITE && lastSelectedCell.pieceType < 6 && lastSelectedCell.pieceType != -1) || (GameData.turn == BLACK && lastSelectedCell.pieceType > 5)) {
             //if the cells moves
 
 
-            isBeingCaptured=false;
-            if(cell.pieceType!=EMPTY && lastSelectedCell.pieceType!=EMPTY){
+            isBeingCaptured = false;
+            if (cell.pieceType != EMPTY && lastSelectedCell.pieceType != EMPTY) {
                 Log.d("Comida", "ss");
-                isBeingCaptured= true;
+                isBeingCaptured = true;
             }
 
-            cell.pieceType=lastSelectedCell.pieceType;
+            cell.pieceType = lastSelectedCell.pieceType;
             lastSelectedCell.pieceType = EMPTY;
 
             //if a pawn reach end line
-            if(cell.pieceType==PAWN && cell.posY==0)
-                cell.pieceType=QUEEN;
-            if(cell.pieceType==PAWN2 && cell.posY==7)
-                cell.pieceType=QUEEN2;
+            if (cell.pieceType == PAWN && cell.posY == 0)
+                cell.pieceType = QUEEN;
+            if (cell.pieceType == PAWN2 && cell.posY == 7)
+                cell.pieceType = QUEEN2;
 
             showBitmap(cell);
             showBitmap(lastSelectedCell);
@@ -510,14 +510,14 @@ public class Chessboard {
             //Check if the game has ended
             checkWin();
 
-            GameData.saveGameModel(gameModel , false);
-            canChangeTurn=true;
+            GameData.saveGameModel(gameModel, false);
+            canChangeTurn = true;
 
         }
     }
 
 
-    private void sendData(Cell cell){
+    private void sendData(Cell cell) {
         //Aux positions are the positions that changed in the board, and the arraylist that will be send to server
         ArrayList<Integer> auxPositions = new ArrayList<>();
         auxPositions.add(lastSelectedCell.posX);
@@ -525,16 +525,16 @@ public class Chessboard {
         auxPositions.add(cell.posX);
         auxPositions.add(cell.posY);
 
-        if(cell.pieceType==cell.KING)
+        if (cell.pieceType == cell.KING)
             whiteKing = cell;
-        if(cell.pieceType==cell.KING2)
+        if (cell.pieceType == cell.KING2)
             blackKing = cell;
 
         gameModel.setPositions(auxPositions);
 
         //Just let to the client that is moving write to the server
         String userInput = auxPositions.toString();
-        if(GameData.currentPlayer == GameData.turn &&  !GameData.isOffline){
+        if (GameData.currentPlayer == GameData.turn && !GameData.isOffline) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -551,13 +551,13 @@ public class Chessboard {
     }
 
     //first it checks if the king is checked with checkCheckMate,then check if its mate with checkMate()
-    private void checkWin(){
-        if(checkCheckMate(whiteKing) || checkCheckMate(blackKing)){
-            if(checkMate()){
-                if(GameData.turn == GameData.BLACK){
+    private void checkWin() {
+        if (checkCheckMate(whiteKing) || checkCheckMate(blackKing)) {
+            if (checkMate()) {
+                if (GameData.turn == GameData.BLACK) {
                     gameModel.setWinner(GameData.BLACK);
 
-                    if(!GameData.isOffline){
+                    if (!GameData.isOffline) {
                         try {
                             out.close();
                             socket.close();
@@ -567,10 +567,10 @@ public class Chessboard {
                     }
 
 
-                }else if(GameData.turn == GameData.WHITE){
+                } else if (GameData.turn == GameData.WHITE) {
                     Toast.makeText(context, "White wins", Toast.LENGTH_SHORT).show();
                     gameModel.setWinner(GameData.WHITE);
-                    if(!GameData.isOffline) {
+                    if (!GameData.isOffline) {
                         try {
                             out.close();
                             socket.close();
@@ -580,23 +580,24 @@ public class Chessboard {
                     }
 
                 }
-                GameData.saveGameModel(gameModel,true);
+                GameData.saveGameModel(gameModel, true);
                 gameModel.setGAME_STATUS(GameData.FINISHED);
                 //updateStats();
                 return;
             }
         }
     }
-    public boolean checkCheckMate(Cell king){
+
+    public boolean checkCheckMate(Cell king) {
         Log.d("checkCheckMate", "checkCheckMate");
 
 
         setAvailableEnemyMoves(king);
 
-        for (ArrayList<int[]> arrays : king.availableEnemyMoves ) {
+        for (ArrayList<int[]> arrays : king.availableEnemyMoves) {
             for (int[] enemyMoves : arrays) {
                 //But also an enemy
-                if ((king.posX == enemyMoves[0] && king.posY == enemyMoves[1])   )
+                if ((king.posX == enemyMoves[0] && king.posY == enemyMoves[1]))
                     return true;
 
             }
@@ -605,7 +606,6 @@ public class Chessboard {
         return false;
 
     }
-
 
 
     public void setAllDirections(Cell cell) {
@@ -648,6 +648,7 @@ public class Chessboard {
             }
         }
     }
+
     public void setAvailableEnemyMoves(Cell cell) {
         Log.d("setAvailableEnemyMoves", "setAvailableEnemyMoves");
         setAllDirections(cell);
@@ -662,6 +663,7 @@ public class Chessboard {
             }
         }
     }
+
     //Fakes a move from <selectedCell> to <underCheckCell> and checks if the king is safe after that
     public boolean checkKingIsSafe(Cell underCheckCell, Cell selectedCell) {
         Log.d("checkKingIsSafe", "checkKingIsSafe");
@@ -710,8 +712,6 @@ public class Chessboard {
             } else if (changeBlackKing) {
                 blackKing = selectedCell;
             }
-
-
 
 
             return kingIsSafe;

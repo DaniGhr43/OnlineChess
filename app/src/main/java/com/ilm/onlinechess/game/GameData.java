@@ -10,7 +10,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.ilm.onlinechess.User;
+import com.ilm.onlinechess.UserDTO;
 
 public class GameData  {
 
@@ -20,7 +20,7 @@ public class GameData  {
     //To acces the gameModel of this class us this variable
     public static LiveData<GameModel> gameModel = _gameModel;
     public static int currentPlayer;
-    public static MutableLiveData<User> _user = new MutableLiveData<>();
+    public static MutableLiveData<UserDTO> _user = new MutableLiveData<>();
     public static final int WHITE = 0;
     public static final int BLACK = 1;
     public static final int CREATE = 1;
@@ -83,7 +83,7 @@ public class GameData  {
     }
 
 
-    public static void updateUser(User user){
+    public static void updateUser(UserDTO user){
 
         new Thread(new Runnable() {
             @Override

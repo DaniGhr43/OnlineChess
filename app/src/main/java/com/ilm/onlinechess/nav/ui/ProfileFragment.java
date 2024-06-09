@@ -17,7 +17,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.ilm.onlinechess.game.GameData;
-import com.ilm.onlinechess.User;
+import com.ilm.onlinechess.UserDTO;
 import com.ilm.onlinechess.databinding.FragmentProfileBinding;
 
 
@@ -25,7 +25,7 @@ public class ProfileFragment extends Fragment {
 
 
     private FragmentProfileBinding binding;
-    private User user;
+    private UserDTO user;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,Bundle savedInstanceState) {

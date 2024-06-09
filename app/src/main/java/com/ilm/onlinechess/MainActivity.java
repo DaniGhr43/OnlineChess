@@ -192,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         // Convertir el documento a un objeto GameModel
-                        User user = documentSnapshot.toObject(User.class);
+                        UserDTO user = documentSnapshot.toObject(UserDTO.class);
 
                         //Update the user image becuase it could have changed
 
@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                         //If user do not exist in BD, crates one
                         } else {
 
-                            User logedUser = new User();
+                            UserDTO logedUser = new UserDTO();
                             logedUser.setEmail(firebaseUser.getEmail());
                             logedUser.setUsername(firebaseUser.getDisplayName());
                             logedUser.setUrlImage(firebaseUser.getPhotoUrl().toString());

@@ -3,8 +3,8 @@ package com.ilm.onlinechess;
 
 
 
-public class User {
-    public User() {
+public class UserDTO {
+    public UserDTO() {
         this.username = "Guest";
         this.rank = 100;
         this.timespend = "";

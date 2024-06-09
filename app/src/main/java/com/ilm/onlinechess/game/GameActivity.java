@@ -15,7 +15,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -27,11 +26,10 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.google.firebase.firestore.DocumentReference;
 import com.ilm.onlinechess.R;
-import com.ilm.onlinechess.User;
+import com.ilm.onlinechess.UserDTO;
 import com.ilm.onlinechess.databinding.ActivityGameBinding;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class GameActivity extends AppCompatActivity  {
 
@@ -259,13 +257,13 @@ public class GameActivity extends AppCompatActivity  {
     public void updateStats(){
 
         if(GameData.currentPlayer == gameModel.getWinner() && GameData.isLoged){
-            User user =  GameData._user.getValue();
+            UserDTO user =  GameData._user.getValue();
             user.setRank(user.getRank()+20);
             user.setLevel(user.getLevel()+0.25);
 
             GameData.updateUser(user);
         }else if(GameData.isLoged){
-            User user =  GameData._user.getValue();
+            UserDTO user =  GameData._user.getValue();
             if(user.getRank()>0)
                 user.setRank(user.getRank()-20);
             user.setLevel(user.getLevel()+0.10);
